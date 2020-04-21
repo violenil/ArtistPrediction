@@ -3,7 +3,10 @@ from typing import List, Dict, Tuple
 
 PAD_STR = '__UNK__'
 
-
+class Dataset():
+    def __init__(self):
+        pass
+    
 def read_file(file_path: str) -> pd.DataFrame:
     content = pd.read_csv(file_path, delimiter=',')
     return content
