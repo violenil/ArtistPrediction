@@ -11,11 +11,13 @@ lyrics = df['text']
 
 def artistPredictor(lyr, art):   
     """
-        For now, this predictor simply selects a random artist from the list as a "prediction"
+        I tried 'random' prediction of artist first, had lower precision and fscore
+        than when you fix the artist prediction to one artist, eg. ABBA (quite a lot of songs)
     """
     artistListPred = []
     for lyric in lyr:
-        artistListPred.append(random.choice(art))
+        artistListPred.append("ABBA")
+        #artistListPred.append(random.choice(art))
     return artistListPred
 
 predictions = artistPredictor(lyrics, artists)
