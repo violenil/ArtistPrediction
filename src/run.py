@@ -12,12 +12,17 @@ batch_size = 10
 list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
 # print(list_of_train_batches)
 
+list_of_labels=[]
+list_of_predicted_labels=[]
 for batch in list_of_train_batches:
-    correct = eva.extract_labels(batch)
-    predictions = eva.artistPredictor(batch=batch, list_artist_frequency=list_artist_frequency)
-    print(correct, '.....', predictions)
+    labels = eva.extract_labels(batch)
+    list_of_labels.extend(labels)
+    predicted_labels = eva.artistPredictor(batch=batch, list_artist_frequency=list_artist_frequency)
+    list_of_predicted_labels.extend(predicted_labels)
+    print(labels, '.....', predicted_labels)
 
-    evaluat = eva.evaluation(predictions, correct)
+
+    evaluat = eva.evaluation(predicted_labels, labels)
     p = evaluat[0] / (evaluat[0] + evaluat[1])
     r = evaluat[0] / (evaluat[0] + evaluat[2])
     if p==0 or r==0:

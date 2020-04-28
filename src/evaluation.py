@@ -1,14 +1,8 @@
-import pandas as pd
-#import string
-#from nltk.corpus import stopwords
-#from nltk.stem import WordNetLemmatizer
-
-from DataSet import Dataset
 import random
 from typing import List, Dict, Tuple
 
 
-def artistPredictor(batch:List, list_artist_frequency: List) -> List:
+def artistPredictor(batch: List, list_artist_frequency: List) -> List:
     list_of_predicted_labels = []
     for i in range(len(batch)):
         list_of_predicted_labels.append(random.choice(list_artist_frequency))
@@ -27,39 +21,39 @@ def extract_labels(batch: List) -> List:
     return list_labels
 
 
+def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, list_of_artists: List) -> Dict:
+    """
+    This function takes three lists as parameters.
+
+    :param list_of_labels: this contains all the correct labels of the dataset. E.g. [2,2,3,4,8,6,1,8]
+    :param list_of_predicted_labels: this contains all the labels predicted by our classifier. E.g. [2,5,8,1,8,4,4,6]
+    :param list_of_artists: The list of all the artists in our dataset. E.g. [1,2,3,4,5,6,7,8]
+    :return: a dictionary of TP, FP, FN and TN which looks like {TP:[], FP:[], FN:[], TN:[]}
+    """
+    dict_of_results = {'TP': [], 'FP': [], 'FN': [], 'TN': []}
+    # TODO: Implement here.
+    return dict_of_results
 
 
-# df = pd.read_csv('../songdata.csv')
-# artists = df['artist'].unique()
-#
-# lyrics = df['text']
+if __name__ == '__main__':
+    dict_of_result = evaluate_predictions(list_of_labels=[2, 2, 3, 4, 8, 6, 1, 8],
+                                          list_of_predicted_labels=[2, 5, 8, 1, 8, 4, 4, 6],
+                                          list_of_artists=[1, 2, 3, 4, 5, 6, 7, 8])
+    print(dict_of_result)
 
-# def artistPredictor(lyr, art):
-#     """
-#         I tried 'random' prediction of artist first, had lower precision and fscore
-#         than when you fix the artist prediction to one artist, eg. ABBA (quite a lot of songs)
-#     """
-#     artistListPred = []
-#     for lyric in lyr:
-#         artistListPred.append("ABBA")
-#         #artistListPred.append(random.choice(art))
-#     return artistListPred
 
-# predictions = artistPredictor(lyrics, artists)
-# correct = df['artist']
-
-def evaluation(pred, correct):
-    tp = 0
-    fp = 0
-    fn = 0
-    tn = 0
-    index = 0
-    for artist in pred:
-        if artist == correct[index]:
-            tp += 1
-        else:
-            fn += 1
-            fp += 1
-        index += 1
-    return [tp, fp, fn, tn]
-
+# def evaluation(pred, correct):
+#     tp = 0
+#     tp = 0
+#     fp = 0
+#     fn = 0
+#     tn = 0
+#     index = 0
+#     for artist in pred:
+#         if artist == correct[index]:
+#             tp += 1
+#         else:
+#             fn += 1
+#             fp += 1
+#         index += 1
+#     return [tp, fp, fn, tn]
