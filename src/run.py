@@ -6,7 +6,7 @@ dataset = Dataset(file_path='../benchmark/songdata.csv')
 resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
 list_artist_frequency = dataset.get_list_artist_to_index()
 train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)
-unique_artists=list(dataset.artists_to_indx_dict.values())
+unique_artists=list(dataset.artists_to_indx_dict.values()) # changed keys to values here to access numbers for each artist instead of name
 
 batch_size = 10
 list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
@@ -21,8 +21,8 @@ for batch in list_of_train_batches:
     #print(labels, '.....', predicted_labels)
 
     # i need one last argument for the function below: a list of unique labels (should follow list_of_predicted_labels)
-print(list_of_labels)
-print(list_of_predicted_labels)
-print(unique_artists)
-#evaluat = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels,unique_artists)
-#print(evaluat)
+#print(list_of_labels)
+#print(list_of_predicted_labels)
+#print(unique_artists)
+evaluat = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels, unique_artists)
+print(evaluat)
