@@ -31,7 +31,26 @@ def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, l
     :return: a dictionary of TP, FP, FN and TN which looks like {TP:[], FP:[], FN:[], TN:[]}
     """
     dict_of_results = {'TP': [], 'FP': [], 'FN': [], 'TN': []}
-    # TODO: Implement here.
+    for artist in list_of_artists:  # looping through each class (artist) at a time
+        tp = 0
+        fp = 0 
+        fn = 0
+        tn = 0
+        indexesPred = [i for i, x in enumerate(list_of_predicted_labels) if x == artist]
+        indexesGold = [i for i, x in enumerate(list_of_labels) if x == artist] # retrieving all indexes of the artist in predicted and gold, to compare them
+        for index in indexesPred:   # going through all predicted indexes for this artist
+            if index in indexesGold:    # if we find a match, then tp is increased by 1
+                tp += 1
+            else:
+                fp += 1         # if it doesnt occur, we have a false positive
+        for index in indexesGold:   # going through all gold indexes to see if we missed any
+            if index not in indexesPred:    # if they dont occur in predicted index list, then we have a false negative
+                fn += 1
+        dict_of_results['TP'].append(tp)
+        dict_of_results['FP'].append(fp)
+        dict_of_results['FN'].append(fn)
+        dict_of_results['TN'].append(tn) # Note: I haven't given any thought to tn, how to calculate this? Does it matter?
+        
     return dict_of_results
 
 
@@ -40,20 +59,3 @@ if __name__ == '__main__':
                                           list_of_predicted_labels=[2, 5, 8, 1, 8, 4, 4, 6],
                                           list_of_artists=[1, 2, 3, 4, 5, 6, 7, 8])
     print(dict_of_result)
-
-
-# def evaluation(pred, correct):
-#     tp = 0
-#     tp = 0
-#     fp = 0
-#     fn = 0
-#     tn = 0
-#     index = 0
-#     for artist in pred:
-#         if artist == correct[index]:
-#             tp += 1
-#         else:
-#             fn += 1
-#             fp += 1
-#         index += 1
-#     return [tp, fp, fn, tn]
