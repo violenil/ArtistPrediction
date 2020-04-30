@@ -53,6 +53,20 @@ def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, l
         
     return dict_of_results
 
+def micro_scores(dict_of_results: Dict) -> List:
+    """
+    This function calculates the average of all tp, fp, fn, tn for all classes and provides a micro precision and recall and F1
+    """
+    averages = {}
+    averages['TP'] = sum(dict_of_results['TP'])
+    averages['FP'] = sum(dict_of_results['FP'])
+    averages['FN'] = sum(dict_of_results['FN'])
+    averages['TN'] = sum(dict_of_results['TN'])
+    microPrec = averages['TP']/(averages['TP'] + averages['FP'])
+    microRec = averages['TP']/(averages['TP'] + averages['FN'])
+    microF1 = (2*microPrec*microRec)/(microPrec+microRec)
+
+    return [microPrec, microRec, microF1]
 
 if __name__ == '__main__':
     dict_of_result = evaluate_predictions(list_of_labels=[2, 2, 3, 4, 8, 6, 1, 8],
