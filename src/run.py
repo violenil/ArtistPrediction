@@ -2,12 +2,15 @@
 from DataSet import Dataset
 import evaluation as eva
 
-dataset = Dataset(file_path='../benchmark/songdata.csv')
+dataset = Dataset(file_path='../benchmark/fewsongs.csv')
 # print(dataset)
 resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
 list_artist_frequency = dataset.get_list_artist_to_index()
 train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)
 # print(train_dt, '\n', validation_dt, '\n', test_dt)
+unique_artist=dataset.index_to_artist_dict
+print(unique_artist)
+
 batch_size = 10
 list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
 # print(list_of_train_batches)
