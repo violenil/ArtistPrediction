@@ -6,7 +6,7 @@ dataset = Dataset(file_path='../benchmark/songdata.csv')
 resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
 list_artist_frequency = dataset.get_list_artist_to_index()
 train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)
-unique_artists=list(dataset.artists_to_indx_dict.keys())
+unique_artists=list(dataset.index_to_artist_dict.keys())
 
 batch_size = 10
 list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
