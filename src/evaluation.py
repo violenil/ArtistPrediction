@@ -21,7 +21,7 @@ def extract_labels(batch: List) -> List:
     return list_labels
 
 
-def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, list_of_artists: List) -> Dict:
+def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, list_of_artists:List) -> Dict:
     """
     This function takes three lists as parameters.
 
