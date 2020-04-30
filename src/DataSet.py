@@ -188,6 +188,7 @@ if __name__ == "__main__":
     list_artist_frequency = dataset.get_list_artist_to_index()
     train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)
     # print(train_dt, '\n', validation_dt, '\n', test_dt)
+    unique_artist=set(dataset.list_artist)
     batch_size = 2
     list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
     # print(list_of_train_batches)
