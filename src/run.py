@@ -24,15 +24,15 @@ for batch in list_of_train_batches:
     list_of_predicted_labels.extend(predicted_labels)
     print(labels, '.....', predicted_labels)
 
+    # i need one last argument for the function below: a list of unique labels (should follow list_of_predicted_labels)
+    evaluat = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels)
+    p = evaluat[0] / (evaluat[0] + evaluat[1])
+    r = evaluat[0] / (evaluat[0] + evaluat[2])
+    if p==0 or r==0:
+        fscore=0
+    else:
+        fscore = 2 * ((p * r) / (p + r))
 
-    # evaluat = eva.evaluation(predicted_labels, labels)
-    # p = evaluat[0] / (evaluat[0] + evaluat[1])
-    # r = evaluat[0] / (evaluat[0] + evaluat[2])
-    # if p==0 or r==0:
-    #     fscore=0
-    # else:
-    #     fscore = 2 * ((p * r) / (p + r))
-    #
-    # print("Precision: " + str(p))
-    # print("Recall: " + str(r))
-    # print("F-score: " + str(fscore))
+    print("Precision: " + str(p))
+    print("Recall: " + str(r))
+    print("F-score: " + str(fscore))
