@@ -20,9 +20,7 @@ for batch in list_of_train_batches:
     list_of_predicted_labels.extend(predicted_labels)
     #print(labels, '.....', predicted_labels)
 
-    # i need one last argument for the function below: a list of unique labels (should follow list_of_predicted_labels)
-#print(list_of_labels)
-#print(list_of_predicted_labels)
-#print(unique_artists)
-evaluat = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels, unique_artists)
-print(evaluat)
+evaluation = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels, unique_artists) #this evaluation consists of dict of tp, fp, fn, tn
+
+print(eva.micro_scores(evaluation))
+print(eva.macro_scores(evaluation))
