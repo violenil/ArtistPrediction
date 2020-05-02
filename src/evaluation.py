@@ -50,6 +50,7 @@ def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, l
         dict_of_results['FP'].append(fp)
         dict_of_results['FN'].append(fn)
         dict_of_results['TN'].append(tn) # Note: I haven't given any thought to tn, how to calculate this? Does it matter?
+        assert len(dict_of_results['TP']) == len(dict_of_results['FP']) and len(dict_of_results['FP']) == len(dict_of_results['FN']) #just to ensure they are same len
         
     return dict_of_results
 
@@ -68,8 +69,32 @@ def micro_scores(dict_of_results: Dict) -> List:
 
     return [microPrec, microRec, microF1]
 
+def macro_scores(dict_of_results: Dict) -> List:
+    """
+    This function calculates precision and recall for each class, then takes the average precision and recall to calculate F1
+    """
+    prec_list = []
+    rec_list = []
+    for i in range(len(dict_of_results['TP'])):
+        tp = dict_of_results['TP'][i]
+        fp = dict_of_results['FP'][i]
+        fn = dict_of_results['FN'][i]
+        if tp == 0:  #problem of zero nominator
+            prec_list.append(0.0)
+            rec_list.append(0.0)
+        else:
+            prec_list.append(tp/(tp+fp))
+            rec_list.append(tp/(tp+fn))
+    macroPrec = sum(prec_list)/len(prec_list)
+    macroRec = sum(rec_list)/len(rec_list)
+    macroF1 = (2*macroPrec*macroRec)/(macroPrec+macroRec)
+
+    return [macroPrec, macroRec, macroF1]
+
 if __name__ == '__main__':
-    dict_of_result = evaluate_predictions(list_of_labels=[2, 2, 3, 4, 8, 6, 1, 8],
-                                          list_of_predicted_labels=[2, 5, 8, 1, 8, 4, 4, 6],
+    dict_of_results = evaluate_predictions(list_of_labels=[2, 2, 3, 4, 8, 6, 1, 8],
+                                          list_of_predicted_labels=[2, 5, 3, 4, 8, 1, 4, 6],
                                           list_of_artists=[1, 2, 3, 4, 5, 6, 7, 8])
-    print(dict_of_result)
+    print(dict_of_results)
+    print(micro_scores(dict_of_results))
+    print(macro_scores(dict_of_results))
