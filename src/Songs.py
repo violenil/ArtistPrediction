@@ -6,7 +6,7 @@ class Song:
         self.lyrics = lyrics
         self.feature_vector = feature_vector
 
-    def bow_feature_extraction(self, vocab: List[str]) -> List:
+    def bow_feature_extraction(self, vocab: List[str]) -> None:
         """
         this method considers bag of words model for feature extraction
         the vocab for this method needs to be created elsewhere, consisting of all types in our
@@ -19,6 +19,6 @@ class Song:
             else:
                 feat_vec.append(0)
         assert len(vocab) == len(feat_vec)
-        return feat_vec
+        self.feature_vector = feat_vec
 
 
