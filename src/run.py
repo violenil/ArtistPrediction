@@ -2,6 +2,7 @@ from DataSet import Dataset
 import evaluation as eva
 
 dataset = Dataset(file_path='../benchmark/songdata.csv')
+#print(dataset)
 resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
 list_artist_frequency = dataset.get_list_artist_to_index()
 train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)

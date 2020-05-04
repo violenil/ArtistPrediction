@@ -46,8 +46,8 @@ class Dataset:
 
             lyrics = content.iloc[i][3]
             # the next line is written for removing all the '\n'
-            new_lyrics = "".join(lyrics.splitlines())
-            tok_new_lyrics = self.get_tokenized_data(new_lyrics)
+            #new_lyrics = "".join(lyrics.splitlines())
+            tok_new_lyrics = self.get_tokenized_data(lyrics)
             list_song_data.append(artist_name)
             list_song_data.append(tok_song_name)
             list_song_data.append(tok_new_lyrics)
