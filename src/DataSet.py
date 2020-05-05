@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 from typing import List, Dict, Tuple
+from nltk.tokenize import word_tokenize
 
 PAD_STR = '__UNK__'
 random.seed=1
@@ -58,7 +59,9 @@ class Dataset:
         """
         called from get_data each time while we retrieve data from 'content' and return the tokens of the data.
         """
-        tokens = song_text.split(' ')
+        tokens = word_tokenize(song_text)
+
+        #tokens = song_text.split(' ')
         # tokens = get_tokens(text=song_text, chars=[' ', ',', "'"])
         return tokens
 
