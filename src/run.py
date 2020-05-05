@@ -22,8 +22,11 @@ for batch in list_of_train_batches:
 
 evaluation = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels, unique_artists) #this evaluation consists of dict of tp, fp, fn, tn
 
-micro_scores_dict = eva.micro_scores(evaluation)
-macro_scores_dict = eva.macro_scores(evaluation)
+#micro_scores_dict = eva.micro_scores(evaluation)
+#macro_scores_dict = eva.macro_scores(evaluation)
 
-print(micro_scores_dict)
-print(macro_scores_dict)
+#print(micro_scores_dict)
+#print(macro_scores_dict)
+
+
+print(dataset.list_of_songs[0][2])
