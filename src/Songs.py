@@ -1,5 +1,6 @@
 from typing import List, Tuple, Dict
 
+
 class Song:
     def __init__(self, label: int, lyrics: List, feature_vector: List[int]) -> None:
         self.label = label
@@ -20,5 +21,3 @@ class Song:
                 feat_vec.append(0)
         assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
-
-

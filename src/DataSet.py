@@ -1,10 +1,12 @@
 import pandas as pd
 import random
 from typing import List, Dict, Tuple
-from nltk.tokenize import word_tokenize
+
+# from nltk.tokenize import word_tokenize
 
 PAD_STR = '__UNK__'
-random.seed=1
+random.seed = 1
+
 
 class Dataset:
     def __init__(self, file_path: str) -> None:
@@ -15,12 +17,12 @@ class Dataset:
         self.list_artist, self.artists_to_indx_dict, self.index_to_artist_dict = self.find_unique_artist()
         self.change_labels_to_numbers()
 
-    #def __str__(self):
+        # def __str__(self):
         '''
         Return any string
         '''
-        #l = self.list_of_songs[:2]
-        #return str(l)
+        # l = self.list_of_songs[:2]
+        # return str(l)
 
     def __len__(self):
         return len(self.list_of_songs)
@@ -47,7 +49,7 @@ class Dataset:
 
             lyrics = content.iloc[i][3]
             # the next line is written for removing all the '\n'
-            #new_lyrics = "".join(lyrics.splitlines())
+            # new_lyrics = "".join(lyrics.splitlines())
             tok_new_lyrics = self.get_tokenized_data(lyrics)
             list_song_data.append(artist_name)
             list_song_data.append(tok_song_name)
@@ -59,9 +61,9 @@ class Dataset:
         """
         called from get_data each time while we retrieve data from 'content' and return the tokens of the data.
         """
-        tokens = word_tokenize(song_text)
+        # tokens = word_tokenize(song_text)
 
-        #tokens = song_text.split(' ')
+        tokens = song_text.split(' ')
         # tokens = get_tokens(text=song_text, chars=[' ', ',', "'"])
         return tokens
 
@@ -187,13 +189,13 @@ class Dataset:
 if __name__ == "__main__":
     dataset = Dataset(file_path='../benchmark/fewsongs.csv')
 
-    print(dataset.list_of_songs)
-    resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
+    # print(dataset.list_of_songs)
+    # resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
     list_artist_frequency = dataset.get_list_artist_to_index()
-    train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)
+    train_dt, validation_dt, test_dt = dataset.split_data(dt=dataset.list_of_songs)
     # print(train_dt, '\n', validation_dt, '\n', test_dt)
-    unique_artist=set(dataset.list_artist)
+    unique_artist = set(dataset.list_artist)
     batch_size = 2
     list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
     # print(list_of_train_batches)
-
+    print(dataset.list_of_songs)
