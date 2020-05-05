@@ -2,23 +2,12 @@ import random
 from typing import List, Dict, Tuple
 
 
-def artistPredictor(batch: List, list_artist_frequency: List) -> List:
+def artistPredictor(list_artist_frequency: List) -> List:
     list_of_predicted_labels = []
-    for i in range(len(batch)):
+    for i in range(len(list_artist_frequency)):
         list_of_predicted_labels.append(random.choice(list_artist_frequency))
     return list_of_predicted_labels
 
-
-def extract_labels(batch: List) -> List:
-    """
-    Called from train or test neural network functions and it extracts the labels
-    from the respective batch, and appends them to a separate list.
-    """
-    list_labels = []
-    for song in batch:
-        output = song[0]
-        list_labels.append(output)
-    return list_labels
 
 
 def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, list_of_artists:List) -> Dict:

@@ -1,33 +1,37 @@
-from DataSet import Dataset
+import pandas as pd
+from Song import Song
 import evaluation as eva
 
-dataset = Dataset(file_path='../benchmark/songdata.csv')
-#resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
-list_artist_frequency = dataset.get_list_artist_to_index()
-train_dt, validation_dt, test_dt = dataset.split_data(dt=dataset.list_of_songs)
-unique_artists = list(dataset.index_to_artist_dict.keys())
-print(len(dataset.list_of_songs))
+content = pd.read_csv('../benchmark/fewsongs.csv', delimiter=',')
+content = content.sample(frac=1).reset_index(drop=True)# shuffle data
+dict_artistnames_to_indx = {}
+def get_artist_to_idx(artist: str) -> int:
+    if artist not in dict_artistnames_to_indx:
+        dict_artistnames_to_indx[artist] = len(dict_artistnames_to_indx)
+    return dict_artistnames_to_indx[artist]
+
+content['artist_id'] = content['artist'].apply(get_artist_to_idx)
+list_of_song_instances = []
+for i in range(len(content)):
+    s = Song(label=content.iloc[i][0], artist_id=content.iloc[i][4], song_name=content.iloc[i][1],
+             lyrics=content.iloc[i][3])
+    list_of_song_instances.append(s)
 
 
-batch_size = 10
-list_of_train_batches = dataset.make_batches(data=train_dt, bch_sz=batch_size)
-
-list_of_labels = []
-list_of_predicted_labels = []
-for batch in list_of_train_batches:
-    labels = eva.extract_labels(batch)
-    list_of_labels.extend(labels)
-    predicted_labels = eva.artistPredictor(batch=batch, list_artist_frequency=list_artist_frequency)
-    list_of_predicted_labels.extend(predicted_labels)
-    # print(labels, '.....', predicted_labels)
-
-evaluation = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels, unique_artists) #this evaluation consists of dict of tp, fp, fn, tn
-
-#micro_scores_dict = eva.micro_scores(evaluation)
-#macro_scores_dict = eva.macro_scores(evaluation)
-
-#print(micro_scores_dict)
-#print(macro_scores_dict)
 
 
-#print(dataset.list_of_songs[0][2])
+list_of_artist_frequency = list(content['artist_id'])
+list_of_labels = list(content['artist_id'])
+list_of_predicted_labels = eva.artistPredictor(list_artist_frequency=list_of_artist_frequency)
+
+unique_artists = list(dict_artistnames_to_indx.values())
+
+evaluation = eva.evaluate_predictions(list_of_labels, list_of_predicted_labels,
+                                      unique_artists)  # this evaluation consists of dict of tp, fp, fn, tn
+
+micro_scores_dict = eva.micro_scores(evaluation)
+macro_scores_dict = eva.macro_scores(evaluation)
+
+print(micro_scores_dict)
+print(macro_scores_dict)
+
