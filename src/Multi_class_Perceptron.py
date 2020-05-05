@@ -29,6 +29,8 @@ class MCP:
 
 
 if __name__ == '__main__':
+    feature_vec = [[1, 1, 1], [1, 2, 2], [1, 1, 3]]
+    label = [1, 1, -1]
     m = MCP(feature_vector=feature_vec, weight_vector=weight_vec, classes=total_class)
     for i in range(5):
         dict_of_scores = m.find_all_scores()

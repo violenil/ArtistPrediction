@@ -14,12 +14,12 @@ class Dataset:
         self.list_artist, self.artists_to_indx_dict, self.index_to_artist_dict = self.find_unique_artist()
         self.change_labels_to_numbers()
 
-    def __str__(self):
+    #def __str__(self):
         '''
         Return any string
         '''
-        l = self.list_of_songs[:2]
-        return str(l)
+        #l = self.list_of_songs[:2]
+        #return str(l)
 
     def __len__(self):
         return len(self.list_of_songs)
@@ -183,7 +183,8 @@ class Dataset:
 
 if __name__ == "__main__":
     dataset = Dataset(file_path='../benchmark/fewsongs.csv')
-    # print(dataset)
+
+    print(dataset.list_of_songs)
     resize_text = dataset.resize_data(list_of_song=dataset.list_of_songs)
     list_artist_frequency = dataset.get_list_artist_to_index()
     train_dt, validation_dt, test_dt = dataset.split_data(dt=resize_text)
