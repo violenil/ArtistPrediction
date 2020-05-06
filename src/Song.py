@@ -9,6 +9,10 @@ class Song:
         self.lyrics = self.get_tokenized_data(song_text=lyrics)
         self.feature_vector=[]
 
+    def __str__(self):
+
+        return self.label+','+str(self.song_name)+','+str(self.lyrics)+','+str(self.artist_id)
+
     def get_tokenized_data(self, song_text: str) -> List:
         """
         called from get_data each time while we retrieve data from 'content' and return the tokens of the data.
