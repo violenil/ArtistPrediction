@@ -6,13 +6,23 @@ content = pd.read_csv('../benchmark/fewsongs.csv', delimiter=',')
 content = content.sample(frac=1).reset_index(drop=True)# shuffle data
 dict_artistnames_to_indx = {}
 def get_artist_to_idx(artist: str) -> int:
+    """
+    dictionary where the keys are artist_names and values are unique numbers.
+
+    @param artist:
+    @return:
+    """
     if artist not in dict_artistnames_to_indx:
         dict_artistnames_to_indx[artist] = len(dict_artistnames_to_indx)
     return dict_artistnames_to_indx[artist]
 
-content['artist_id'] = content['artist'].apply(get_artist_to_idx)
+content['artist_id'] = content['artist'].apply(get_artist_to_idx) # a new column gets created in the csv file with unique artist_id.
 list_of_song_instances = []
 for i in range(len(content)):
+    """
+    Instances of each songs gets created. And the label, artist_id, song_name, lyrics are passed to the 
+    respective class. Furthermore the instances are stored in a list. 
+    """
     s = Song(label=content.iloc[i][0], artist_id=content.iloc[i][4], song_name=content.iloc[i][1],
              lyrics=content.iloc[i][3])
     #print (s)

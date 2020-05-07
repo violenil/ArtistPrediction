@@ -4,9 +4,8 @@ import numpy as np
 
 class Perceptron:
     """
-    we create one perceptron per class. It takes one song and returns the score based on the
-    input multiplied by weight. We set a random weight first and learn by and by.
-    We create a dictionary of feature scores and add all the relevant values to a get score
+    It takes one feature vector and a weight vector as input and returns the score based on the
+    feature_vector multiplied by weight. Based on the retrieved scores the weight gets updated.
     """
 
     def __init__(self, weight_vec: List) -> None:
@@ -14,7 +13,10 @@ class Perceptron:
 
     def find_score(self, feature_vec: List) -> float:
         """
-        TODO: Multiply weight_vector with feature_vector to find score
+        Score is calculated by matrix multiplication of feature vector and weight vector
+
+        @param feature_vec:
+        @return:
         """
         a = np.array(feature_vec)
         b = np.array(self.weight_vec)
@@ -23,12 +25,13 @@ class Perceptron:
 
     def update_weight_vec(self, change_in_weight: List) -> None:
         """
-        TODO: slide no:8 03-perc-flat.pdf
-        TODO: See slide 10 after implementing the above.
+        Update the weight of the perceptron
+
+        @param change_in_weight: The vector that contains the amount of change to the weight vector
+        @return:
         """
         for i in range(len(change_in_weight)):
             self.weight_vec[i] = self.weight_vec[i] + change_in_weight[i]
-
 
 
 if __name__ == '__main__':
@@ -40,7 +43,7 @@ if __name__ == '__main__':
     for epoch in range(3):
         for i in range(len(feature_vec)):
             score = p.find_score(feature_vec=feature_vec[i])
-            #for j in range(len(score_list)):
+            # for j in range(len(score_list)):
             if label[i] == 1:
                 if score > 0:
                     change_in_weight = [j * 0 for j in feature_vec[i]]
@@ -55,5 +58,3 @@ if __name__ == '__main__':
             print(p.weight_vec)
             score_list.append(score)
     print(score_list)
-
-
