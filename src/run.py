@@ -32,8 +32,6 @@ for i in range(len(content)):
     # print (s)
     list_of_song_instances.append(s)
 
-<<<<<<< HEAD
-=======
 
 """
 Get feature vector for all songs
@@ -55,7 +53,6 @@ The 'evaluation' variable consists of comparing Gold Standard to Predicted label
 and then we calculate micro and macro precision, recall and F scores. These are what is returned by
 micro_scores and macro_scores.
 """
->>>>>>> 98cf425ba6a5e70e35c4c1766e6b8112e0c7cf7e
 list_of_artist_frequency = list(content['artist_id'])
 list_of_labels = list(content['artist_id'])
 list_of_predicted_labels = eva.artistPredictor(list_artist_frequency=list_of_artist_frequency)
