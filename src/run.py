@@ -32,6 +32,30 @@ for i in range(len(content)):
     # print (s)
     list_of_song_instances.append(s)
 
+<<<<<<< HEAD
+=======
+
+"""
+Get feature vector for all songs
+First create vocabulary of types in corpus of lyrics
+"""
+vocab = [] #list of tokens
+for song in list_of_song_instances:
+    for word in song.lyrics:
+        if word not in vocab:
+            vocab.append(word)
+for song in list_of_song_instances:
+    song.bow_feature_extraction(vocab)
+    print(song.feature_vector)
+
+"""
+Below is where the evaluation of the results happens.
+We create a list of predicted labels based on the frequencies of labels within the data.
+The 'evaluation' variable consists of comparing Gold Standard to Predicted labels for each class (each artist)
+and then we calculate micro and macro precision, recall and F scores. These are what is returned by
+micro_scores and macro_scores.
+"""
+>>>>>>> 98cf425ba6a5e70e35c4c1766e6b8112e0c7cf7e
 list_of_artist_frequency = list(content['artist_id'])
 list_of_labels = list(content['artist_id'])
 list_of_predicted_labels = eva.artistPredictor(list_artist_frequency=list_of_artist_frequency)
