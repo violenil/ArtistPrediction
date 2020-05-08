@@ -30,7 +30,13 @@ for i in range(len(content)):
 
 
 
-
+"""
+Below is where the evaluation of the results happens.
+We create a list of predicted labels based on the frequencies of labels within the data.
+The 'evaluation' variable consists of comparing Gold Standard to Predicted labels for each class (each artist)
+and then we calculate micro and macro precision, recall and F scores. These are what is returned by
+micro_scores and macro_scores.
+"""
 list_of_artist_frequency = list(content['artist_id'])
 list_of_labels = list(content['artist_id'])
 list_of_predicted_labels = eva.artistPredictor(list_artist_frequency=list_of_artist_frequency)
