@@ -1,3 +1,4 @@
+import re
 from typing import List, Tuple, Dict
 
 
@@ -17,9 +18,12 @@ class Song:
         """
         called from get_data each time while we retrieve data from 'content' and return the tokens of the data.
         """
+        tokens = [match.group(0) for match in re.finditer(r"\w+|([^\w])\1*", song_text)]  #keeps punctuation and \n chars
+
+
         # tokens = word_tokenize(song_text)
 
-        tokens = song_text.split(' ')
+        #tokens = song_text.split(' ')
         # tokens = get_tokens(text=song_text, chars=[' ', ',', "'"])
         return tokens
 
@@ -37,3 +41,7 @@ class Song:
                 feat_vec.append(0)
         assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
+
+if __name__ == '__main__':
+    s = Song('The Beatles', 1, 'Hills of green', "These are the \nlyrics of this song composed by a group of chaps. I think it's quite nice.")
+    print(s.lyrics)
