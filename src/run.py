@@ -37,6 +37,7 @@ for i in range(len(content)):
 Get feature vector for all songs
 First create vocabulary of types in corpus of lyrics
 """
+list_of_feature_vectors = []
 vocab = [] #list of tokens
 for song in list_of_song_instances:
     for word in song.lyrics:
@@ -44,7 +45,9 @@ for song in list_of_song_instances:
             vocab.append(word)
 for song in list_of_song_instances:
     song.bow_feature_extraction(vocab)
+    list_of_feature_vectors.append(song.feature_vector)
     print(song.feature_vector)
+
 
 """
 Below is where the evaluation of the results happens.
