@@ -2,6 +2,7 @@ from typing import List, Dict, Tuple
 from Perceptron import Perceptron
 import random
 import sys
+from tqdm import tqdm
 
 random.seed(33)
 
@@ -25,17 +26,17 @@ class MCP:
         self.dict_of_perceptrons = {}
         for perceptron in classes:
             weight_vec = self.create_random_vec(length=weight_vec_length)
-            print(weight_vec)
+            # print(weight_vec)
             self.dict_of_perceptrons[perceptron] = Perceptron(weight_vec=weight_vec)
 
-    def create_random_vec(self, length: int) -> List[int]:
+    def create_random_vec(self,length: int) -> List[int]:
         """
         A random vector of input length gets created.
 
         @param length:
         @return:
         """
-        random_list = random.sample(range(0, 3), length)
+        random_list = random.sample(range(0,length*5), length)
         return random_list
 
     def find_all_scores(self, feature_vec: List) -> Dict:
@@ -49,9 +50,8 @@ class MCP:
         @return:
         """
         dict_of_scores = {}
-        for perceptron in self.dict_of_perceptrons:
+        for perceptron in tqdm(self.dict_of_perceptrons, desc='finding all scores'):
             dict_of_scores[perceptron] = self.dict_of_perceptrons[perceptron].find_score(feature_vec=feature_vec)
-        print(dict_of_scores)
         return dict_of_scores
 
     def find_max(self, dict_of_scores: Dict) -> Tuple[str, float]:
@@ -63,7 +63,7 @@ class MCP:
         """
         mx_score = -sys.maxsize # Initializing max value to -infinity
         mx_perceptron = ''
-        for perceptron, score in dict_of_scores.items():
+        for perceptron, score in tqdm(dict_of_scores.items(), desc= 'Finding the Perceptron with max score'):
             if score > mx_score:
                 mx_score = score
                 mx_perceptron = perceptron
@@ -84,7 +84,7 @@ class MCP:
         if predicted_perceptron != actual_perceptron:
             change_in_wt_for_actual_perceptron = feature_vec
             change_in_wt_for_predicted_perceptron = [j * -1 for j in feature_vec]
-        print(change_in_wt_for_actual_perceptron, '\n', change_in_wt_for_predicted_perceptron)
+        # print(change_in_wt_for_actual_perceptron, '\n', change_in_wt_for_predicted_perceptron)
         self.dict_of_perceptrons[actual_perceptron].update_weight_vec(
             change_in_weight=change_in_wt_for_actual_perceptron)
         self.dict_of_perceptrons[predicted_perceptron].update_weight_vec(

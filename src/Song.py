@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set
 
 
 class Song:
@@ -23,17 +23,15 @@ class Song:
         # tokens = get_tokens(text=song_text, chars=[' ', ',', "'"])
         return tokens
 
-    def bow_feature_extraction(self, vocab: List[str]) -> None:
+    def bow_feature_extraction(self, vocab: Dict) -> None:
         """
         this method considers bag of words model for feature extraction
         the vocab for this method needs to be created elsewhere, consisting of all types in our
         song collection
         """
         feat_vec = []
-        for word in vocab:
-            if word in self.lyrics:
-                feat_vec.append(1)
-            else:
-                feat_vec.append(0)
-        assert len(vocab) == len(feat_vec)
+        for word in self.lyrics:
+            idx=vocab[word]
+            feat_vec.append(idx)
+        # assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
