@@ -38,8 +38,9 @@ class Song:
         """
         feat_vec = []
         for word in self.lyrics:
-            idx=vocab[word]
-            feat_vec.append(idx)
+            if word in vocab:
+                idx=vocab[word]
+                feat_vec.append(idx)
         # assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
 

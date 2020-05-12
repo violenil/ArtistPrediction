@@ -45,16 +45,19 @@ First create vocabulary of types in corpus of lyrics
 # vocab = []  # list of tokens
 vocab={}
 s=set()
-dict_of_count={}
+dict_of_word_count_in_all_songs={}
 for song in tqdm(list_of_song_instances, desc='Creating Vocab'):
     s1=set(song.lyrics)
     s.update(s1)
     for i in s1:
-        if i not in dict_of_count:
-            dict_of_count[i]=0
-        dict_of_count[i]=dict_of_count[i]+1
+        if i not in dict_of_word_count_in_all_songs:
+            dict_of_word_count_in_all_songs[i]=0
+        dict_of_word_count_in_all_songs[i]= dict_of_word_count_in_all_songs[i] + 1
+marginal_length=len(list_of_song_instances)*0.6
 for word in s:
-    vocab[word]=len(vocab)
+    if dict_of_word_count_in_all_songs[word]<marginal_length:
+        vocab[word]=len(vocab)
+print(len(vocab))
 
 
 for song in\
