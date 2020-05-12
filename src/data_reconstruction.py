@@ -16,8 +16,11 @@ def filter_content(data:pd.DataFrame)->pd.DataFrame:
             dict_of_artist_song_freq[artist] = 1
     
     reduced_dict = {artist:freq for artist, freq in dict_of_artist_song_freq.items() if freq > 150}
-    
-    return reduced_dict
+
+    data.loc[data['artist'].isin(reduced_dict.keys())]
+    print(data)
+
+    return data
 
 if __name__ == '__main__':
     content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
