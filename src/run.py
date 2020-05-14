@@ -76,6 +76,7 @@ unique_artists = list(dict_artistnames_to_indx.values())
 for epoch in range(100):
     list_of_predicted_labels = []
     list_of_actual_labels = []
+    
     for s in tqdm(list_of_song_instances, desc='artist prediction starting '):
         feature_vec=[0]*len(vocab)
         for idx in s.feature_vector:
@@ -93,7 +94,8 @@ for epoch in range(100):
                                           unique_artists)
     micro_scores_dict = eva.micro_scores(evaluation)
     macro_scores_dict = eva.macro_scores(evaluation)
-
+    with open('results.txt', "a") as results_file:
+        results_file.write(f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}\n')
     print(
         f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}')
 
