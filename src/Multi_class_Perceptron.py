@@ -12,6 +12,7 @@ class MCP:
     Instances per class is created. Scores returned from the classes are compared and the change in weight is calculated.
     The change in weight is then passed to the respective two Perceptrons, where their weights gets updated.
     """
+
     def __init__(self, classes: List, weight_vec_length: int) -> None:
         """
         One Perceptron per class is created. A random weight vector is passed as argument to each Perceptron.
@@ -29,14 +30,14 @@ class MCP:
             # print(weight_vec)
             self.dict_of_perceptrons[perceptron] = Perceptron(weight_vec=weight_vec)
 
-    def create_random_vec(self,length: int) -> List[int]:
+    def create_random_vec(self, length: int) -> List[int]:
         """
         A random vector of input length gets created.
 
         @param length:
         @return:
         """
-        random_list = random.sample(range(0,length*5), length)
+        random_list = random.sample(range(0, length * 5), length)
         return random_list
 
     def find_all_scores(self, feature_vec: List) -> Dict:
@@ -50,7 +51,7 @@ class MCP:
         @return:
         """
         dict_of_scores = {}
-        for perceptron in tqdm(self.dict_of_perceptrons, desc='finding all scores'):
+        for perceptron in self.dict_of_perceptrons:
             dict_of_scores[perceptron] = self.dict_of_perceptrons[perceptron].find_score(feature_vec=feature_vec)
         return dict_of_scores
 
@@ -61,9 +62,9 @@ class MCP:
         @param dict_of_scores:
         @return:
         """
-        mx_score = -sys.maxsize # Initializing max value to -infinity
+        mx_score = -sys.maxsize  # Initializing max value to -infinity
         mx_perceptron = ''
-        for perceptron, score in tqdm(dict_of_scores.items(), desc= 'Finding the Perceptron with max score'):
+        for perceptron, score in dict_of_scores.items():
             if score > mx_score:
                 mx_score = score
                 mx_perceptron = perceptron

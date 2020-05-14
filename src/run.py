@@ -4,13 +4,17 @@ import evaluation as eva
 from Multi_class_Perceptron import MCP
 from tqdm import tqdm
 from data_reconstruction import filter_content
+import plot_data as pl
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-content=filter_content(data=content)
+no_of_top_artist = 20
+content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
+no_of_epochs = 100
+
 
 def get_artist_to_idx(artist: str) -> int:
     """
@@ -27,7 +31,7 @@ def get_artist_to_idx(artist: str) -> int:
 content['artist_id'] = content['artist'].apply(
     get_artist_to_idx)  # a new column gets created in the csv file with unique artist_id.
 list_of_song_instances = []
-for i in tqdm(range(len(content)),desc='Creating Song instances'):
+for i in tqdm(range(len(content)), desc='Creating Song instances'):
     """
     Instances of each songs gets created. And the label, artist_id, song_name, lyrics are passed to the 
     respective class. Furthermore the instances are stored in a list. 
@@ -43,24 +47,23 @@ First create vocabulary of types in corpus of lyrics
 """
 # list_of_feature_vectors = []
 # vocab = []  # list of tokens
-vocab={}
-s=set()
-dict_of_word_count_in_all_songs={}
+vocab = {}
+s = set()
+dict_of_word_count_in_all_songs = {}
 for song in tqdm(list_of_song_instances, desc='Creating Vocab'):
-    s1=set(song.lyrics)
+    s1 = set(song.lyrics)
     s.update(s1)
     for i in s1:
         if i not in dict_of_word_count_in_all_songs:
-            dict_of_word_count_in_all_songs[i]=0
-        dict_of_word_count_in_all_songs[i]= dict_of_word_count_in_all_songs[i] + 1
-marginal_length=len(list_of_song_instances)*0.6
+            dict_of_word_count_in_all_songs[i] = 0
+        dict_of_word_count_in_all_songs[i] = dict_of_word_count_in_all_songs[i] + 1
+marginal_length = len(list_of_song_instances) * 0.6
 for word in s:
-    if dict_of_word_count_in_all_songs[word]<marginal_length:
-        vocab[word]=len(vocab)
+    if dict_of_word_count_in_all_songs[word] < marginal_length:
+        vocab[word] = len(vocab)
 print(len(vocab))
 
-
-for song in\
+for song in \
         tqdm(list_of_song_instances, desc='Creating Feature_vector'):
     song.bow_feature_extraction(vocab)
     # list_of_feature_vectors.append(song.feature_vector)
@@ -73,14 +76,17 @@ total_classes = list(dict_artistnames_to_indx.keys())
 m = MCP(classes=total_classes, weight_vec_length=len(vocab))
 
 unique_artists = list(dict_artistnames_to_indx.values())
-for epoch in range(100):
+list_of_evaluation_micro_scores = []
+list_of_evaluation_macro_scores = []
+
+for epoch in range(no_of_epochs):
     list_of_predicted_labels = []
     list_of_actual_labels = []
     
     for s in tqdm(list_of_song_instances, desc='artist prediction starting '):
-        feature_vec=[0]*len(vocab)
+        feature_vec = [0] * len(vocab)
         for idx in s.feature_vector:
-            feature_vec[idx]=1
+            feature_vec[idx] = 1
         label = s.label
         dict_of_scores = m.find_all_scores(feature_vec)
         predicted_perceptron, max_score = m.find_max(dict_of_scores=dict_of_scores)
@@ -98,6 +104,12 @@ for epoch in range(100):
         results_file.write(f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}\n')
     print(
         f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}')
+    list_of_evaluation_micro_scores.append(micro_scores_dict['microF1'])
+    list_of_evaluation_macro_scores.append(macro_scores_dict['macroF1'])
+pl.plot_data(list_of_scores=list_of_evaluation_macro_scores, yaxis_label='macro_scores',
+             file_name=str(no_of_top_artist) + '_artists_macro_' + str(no_of_epochs))
+pl.plot_data(list_of_scores=list_of_evaluation_micro_scores, yaxis_label='micro_scores',
+             file_name=str(no_of_top_artist) + '_artists_micro_' + str(no_of_epochs))
 
 """
 Below is where the evaluation of the results happens.
