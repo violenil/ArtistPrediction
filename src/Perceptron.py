@@ -1,6 +1,5 @@
 from typing import List, Dict, Tuple
-import numpy as np
-
+from utilities import matrix_multiplication
 
 class Perceptron:
     """
@@ -18,9 +17,7 @@ class Perceptron:
         @param feature_vec:
         @return:
         """
-        a = np.array(feature_vec)
-        b = np.array(self.weight_vec)
-        score = np.matmul(a, b)
+        score = matrix_multiplication(feature_vec, self.weight_vec)
         return score
 
     def update_weight_vec(self, change_in_weight: List) -> None:

@@ -15,7 +15,7 @@ content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
-no_of_epochs = 500
+no_of_epochs = 100
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -51,7 +51,8 @@ First create vocabulary of types in corpus of lyrics
 # vocab = []  # list of tokens
 vocab = {}
 s = set()
-dict_of_word_count_in_all_songs = {}
+dict_of_word_count_in_all_songs = {}# a dictionary that contains unique words as keys
+# and count of its presence in songs as values(if present repeated times in one song, the count of that word for that song is 1).
 for song in tqdm(list_of_song_instances, desc='Creating Vocab'):
     s1 = set(song.lyrics)
     s.update(s1)
@@ -59,7 +60,7 @@ for song in tqdm(list_of_song_instances, desc='Creating Vocab'):
         if i not in dict_of_word_count_in_all_songs:
             dict_of_word_count_in_all_songs[i] = 0
         dict_of_word_count_in_all_songs[i] = dict_of_word_count_in_all_songs[i] + 1
-marginal_length = len(list_of_song_instances) * 0.6
+marginal_length = len(list_of_song_instances) * 0.8 # need this length to find the words that is present in 80% of the songs.
 for word in s:
     if dict_of_word_count_in_all_songs[word] < marginal_length:
         vocab[word] = len(vocab)
