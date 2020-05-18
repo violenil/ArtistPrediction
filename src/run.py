@@ -5,15 +5,17 @@ from Multi_class_Perceptron import MCP
 from tqdm import tqdm
 from data_reconstruction import filter_content
 import plot_data as pl
+import json
+from datetime import datetime
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-no_of_top_artist = 20
+no_of_top_artist = 2
 content = filter_content(data=content, k=no_of_top_artist)
-content = content.sample(frac=1).reset_index(drop=True)  # shuffle data
+content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
-no_of_epochs = 100
+no_of_epochs = 500
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -82,7 +84,7 @@ list_of_evaluation_macro_scores = []
 for epoch in range(no_of_epochs):
     list_of_predicted_labels = []
     list_of_actual_labels = []
-    
+
     for s in tqdm(list_of_song_instances, desc='artist prediction starting '):
         feature_vec = [0] * len(vocab)
         for idx in s.feature_vector:
@@ -100,8 +102,7 @@ for epoch in range(no_of_epochs):
                                           unique_artists)
     micro_scores_dict = eva.micro_scores(evaluation)
     macro_scores_dict = eva.macro_scores(evaluation)
-    with open('results.txt', "a") as results_file:
-        results_file.write(f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}\n')
+
     print(
         f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}')
     list_of_evaluation_micro_scores.append(micro_scores_dict['microF1'])
@@ -110,6 +111,18 @@ pl.plot_data(list_of_scores=list_of_evaluation_macro_scores, yaxis_label='macro_
              file_name=str(no_of_top_artist) + '_artists_macro_' + str(no_of_epochs))
 pl.plot_data(list_of_scores=list_of_evaluation_micro_scores, yaxis_label='micro_scores',
              file_name=str(no_of_top_artist) + '_artists_micro_' + str(no_of_epochs))
+with open('../results/' + str(no_of_top_artist) + '_artists_' + str(no_of_epochs) + '.json',
+          "w") as results_file:
+    now = datetime.now()
+    date_time_as_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    dt = {
+        'ran_on': date_time_as_string,
+        'no_of_artists': no_of_top_artist,
+        'no_of_epochs': no_of_epochs,
+        'macro_f_score': list_of_evaluation_macro_scores,
+        'micro_f_score': list_of_evaluation_micro_scores
+    }
+    json.dump(dt, results_file)
 
 """
 Below is where the evaluation of the results happens.
