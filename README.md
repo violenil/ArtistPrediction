@@ -1,6 +1,6 @@
-# Artist-prediction Project 🎵🎵🎵🎵🎵
+# Artist-prediction Project 🎵
 
-Brief description about the project. 
+Brief description about the project.
 
 ## How does it work?
 The following steps gives a brief idea about the functional structure of the code.
@@ -8,9 +8,9 @@ The following steps gives a brief idea about the functional structure of the cod
 - The dataset is read.
 - Create instances for each song and keep it in a list.
 - Create feature vector by considering words present in the lyrics of all songs.
-- Create a class MCP where perceptron instances per artist is created. 
+- Create a class MCP where Perceptron instances per artist is created. 
 - The Perceptron calculates the scores based of feature vector and randomly initialized weight vector.
-- The max score is then compared with the actual label 
+- The max score is then compared with the actual label
 - Weights get updated in the Perceptron class.
 - Evaluation is f-score  
 
