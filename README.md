@@ -16,10 +16,10 @@ The following steps gives a brief idea about the functional structure of the cod
 
 ## Requirements
 
-###### Language
+#### Language
 - python3
 
-###### Libraries
+#### Libraries
 - pandas
 - re
 - matplotlib
@@ -38,7 +38,7 @@ In order to run the code, the file named run.py should be executed. Following ar
 
 After the execution of run.py gets completed, several files are created in the directory results and Plots.
 
-###### Results
+#### Results
 The evaluated f-scores are kept in a json file and looks like ```
 {
   "ran_on": "18/05/2020 15:18:18",
@@ -52,7 +52,7 @@ The evaluated f-scores are kept in a json file and looks like ```
   - The 'no_of_artists' and 'no_of_epochs' keys consists of integers as values.
   - the micro_f_score or macro_f_score consists of list of scores, where each score corresponds to scores per epoch.
 
-###### Plots
+#### Plots
 The plots are generated using matplotlib. no_of_epochs are plotted on the x-axis and f-scores are on the y-axis.
 
 
