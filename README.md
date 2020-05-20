@@ -1,4 +1,4 @@
-# Artist-prediction Project
+# Artist-prediction Project 🎵
 
 Brief description about the project. 
 
