@@ -12,13 +12,13 @@ The approach of this project was to first build a Perceptron classifier, a simpl
 The following steps gives a brief idea about the functional structure of the code.
 
 - The dataset is read.
-- Create instances for each song and keep it in a list.
-- Create feature vector by considering words present in the lyrics of all songs.
-- Create a class MCP where Perceptron instances per artist is created.
-- The Perceptron calculates the scores based of feature vector and randomly initialized weight vector.
-- The max score is then compared with the actual label
+- Instances for each song are created and kept in a list.
+- Feature vectors are created by considering words present in the lyrics of all songs (bag-of-words approach)
+- An instance of the Multi-Class Perceptron (MCP) is created, which controls the creation of one Perceptron for each class.
+- Each Perceptron calculates the scores based on a given feature vector and randomly initialized weight vector.
+- The max score is then compared with the actual label.
 - Weights get updated in the Perceptron class.
-- Evaluation is f-score.
+- The Evaluation returns micro and macro f-scores.
 
 ## Requirements
 
