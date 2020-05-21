@@ -47,10 +47,10 @@ The evaluated f-scores are kept in a json file and looks like ```
   "macro_f_score": [
     0.5102112720296128, 0.5129003851385256, ....]}```
 
-  __Interpreting the json files__
+   __Interpreting the json files__
   - The file consists of four keys. the date the file got created, no_of_artists, no_of_epochs, either macro_f_score or micro_f_score.
   - The 'no_of_artists' and 'no_of_epochs' keys consists of integers as values.
-  - the micro_f_score or macro_f_score consists of list of scores, where each score corresponds to scores per epoch.
+  - the 'micro_f_score' or 'macro_f_score' consists of list of scores, where each score corresponds to scores per epoch.
 
 #### Plots
 The plots are generated using matplotlib. no_of_epochs are plotted on the x-axis and f-scores are on the y-axis.
@@ -63,26 +63,11 @@ Apart from these while executing the run.py, the f-score per epoch is also visib
 - ```ArtistPrediction/benchmarks```
   - contains our dataset.
 
-- ```ArtistPrediction/src/Song.py```
-  - contains
-
-- ```ArtistPrediction/src/Multi_class_Perceptron.py```
-  - contains
-
-- ```ArtistPrediction/src/Perceptron.py```
-  - contains
-
-- ```ArtistPrediction/src/evaluation.py```
-  - contains
-
-- ```ArtistPrediction/src/run.py```
-  - contains
-
-- ```ArtistPrediction/src/utilities.py```
-  - contains
+- ```ArtistPrediction/src```
+  - contains our scource code.
 
 - ```ArtistPrediction/Plots```
-  - contains
+  - contains the generated plots
 
 - ```ArtistPrediction/results```
-  - here
+  - contains json files with results of every epoch.
