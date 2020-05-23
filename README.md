@@ -1,18 +1,24 @@
 # Artist-prediction Project 🎵
 
-Brief description about the project.
+This projects makes an attempt at classifying song instances by artist using only their lyrics and song names. New song instances should then be predicted as being produced by a particular artist.
+
+The most challenging part of this project is the large number classes in the dataset. There are a total of 645 artists, some of which do not have a representative sample of songs (ie. less than 50), making it quite difficult to distinguish between different classes.
+
+Previous work that relates to this project includes authorship attribution, where characterizations of documents are defined that capture the writing style of authors. This project attempts to do a similar thing in that it focuses on the aspects of song lyrics (and song names) that are unique to each artist. Other work that relates specifically to music and lyrics is song genre classification, where the goal is to distinguish between a given number of genres and predict which genre a song falls into.
+
+The approach of this project was to first build a Perceptron classifier, a simple baseline, which considers only a bag-of-words binary feature vector in its classification decision. At a later point, more complex feature vectors may be extracted to increase the efficiency of classification.
 
 ## How does it work? 🤔
 The following steps gives a brief idea about the functional structure of the code.
 
 - The dataset is read.
-- Create instances for each song and keep it in a list.
-- Create feature vector by considering words present in the lyrics of all songs.
-- Create a class MCP where Perceptron instances per artist is created.
-- The Perceptron calculates the scores based of feature vector and randomly initialized weight vector.
-- The max score is then compared with the actual label
+- Instances for each song are created and kept in a list.
+- Feature vectors are created by considering words present in the lyrics of all songs (bag-of-words approach)
+- An instance of the Multi-Class Perceptron (MCP) is created, which controls the creation of one Perceptron for each class.
+- Each Perceptron calculates the scores based on a given feature vector and randomly initialized weight vector.
+- The max score is then compared with the actual label.
 - Weights get updated in the Perceptron class.
-- Evaluation is f-score.
+- The Evaluation returns micro and macro f-scores.
 
 ## Requirements
 
