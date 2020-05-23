@@ -12,7 +12,7 @@ class Song:
         self.lyrics = shortend_lyrics
         self.feature_vector = []
 
-    def __str__(self):
+    def __str__(self) -> str:
 
         return self.label + ',' + str(self.song_name) + ',' + str(self.lyrics) + ',' + str(self.artist_id)
 

@@ -16,12 +16,25 @@ def filter_content(data:pd.DataFrame,k:int)->pd.DataFrame:
         else:
             dict_of_artist_song_freq[artist] = 1
     top_k_artists_and_freq=Counter(dict_of_artist_song_freq).most_common(k)
-    # reduced_dict = {artist:freq for artist, freq in dict_of_artist_song_freq.items() if freq > 150}
-    #
-    # reduced_data = data.loc[data['artist'].isin(reduced_dict.keys())]
     top_k_artists=[artist for artist,freq in top_k_artists_and_freq]
     reduced_data=data.loc[data['artist'].isin(top_k_artists)]
     return reduced_data
+
+def split_data(dt:List) ->Tuple[List,List,List]:
+    """
+    split data into train and validation and test data. We make a 80,10,10 split.
+    :param dt: The list of our retrieved and processed data
+    :return: total training, validation and test data.
+    """
+    total_train_data_len = int(len(dt) * 0.8)
+    total_validation_data_len = int(len(dt) * 0.1)
+    total_test_data_len = len(dt) - (total_train_data_len + total_validation_data_len)
+    total_train_data = dt[:total_train_data_len]
+    total_validation_data = dt[total_train_data_len:total_train_data_len + total_validation_data_len]
+    total_test_data = dt[total_validation_data_len + total_train_data_len:]
+    return total_train_data, total_validation_data, total_test_data
+
+
 
 if __name__ == '__main__':
     content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
