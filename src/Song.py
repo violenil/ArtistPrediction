@@ -42,7 +42,21 @@ class Song:
                 feat_vec.append(idx)
         # assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
-
+    
+    def extract_unique_song_features(self, nouns: Dict) -> None:
+        """
+        This method extracts a set of features:
+            8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
+            2 polarities (negative, positive)
+            length of longest word in song
+            repetition rate (unique_words/total_words)
+            count of \n chars
+            10 most frequent nouns in songs generally (love, time, way, day, baby, heart, life, night, gonna, man) --> binary
+            counts for 5 punctuation symbols (',','.','!','?',''')
+        """
+        feat_vec = []
+        # TO DO
+            
 
 if __name__ == '__main__':
     s = Song('The Beatles', 1, 'Hills of green',
