@@ -67,16 +67,31 @@ for word in s:
         vocab[word] = len(vocab)
 print(len(vocab))
 
+
+"""
+Feature Extraction
+"""
+
+NRC = pd.read_csv('../benchmark/NRCLexicon.csv',sep='\t') #this is the file containing emotion to word mappings
+newNRC = NRC.groupby(['word']).agg(lambda x: tuple(x)).applymap(list).reset_index()
+allEmotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust', 'negative', 'positive']
+words = newNRC['word']
+emotions = newNRC['emotion']
+wordAssociations = dict(zip(words, emotions)) # this is the database that you want to give to the feature extraction
+
 for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
-    song.bow_feature_extraction(vocab)
+    song.extract_unique_song_features(wordAssociations, allEmotions)
+    #song.bow_feature_extraction(vocab)
     # list_of_feature_vectors.append(song.feature_vector)
     # print(song.feature_vector)
 for song in tqdm(validation_data, desc='Creating Feature_vector for validation'):
-    song.bow_feature_extraction(vocab)
+    song.extract_unique_song_features(wordAssociations, allEmotions)
+    #song.bow_feature_extraction(vocab)
 
 for song in tqdm(test_data, desc='Creating Feature_vector for testing'):
-    song.bow_feature_extraction(vocab)
+    song.extract_unique_song_features(wordAssociations, allEmotions)
+    #song.bow_feature_extraction(vocab)
 
 """
 Running  Multi_class_Perceptron

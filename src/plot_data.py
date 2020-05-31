@@ -12,7 +12,7 @@ def plot_data(list_of_scores:List,yaxis_label:str, file_name:str )->None:
     ax.set(xlabel='epoch', ylabel=yaxis_label)
     ax.grid()
 
-    fig.savefig("../Plots/"+file_name+".pdf")
+    fig.savefig("../otherPlots/"+file_name+".pdf")
     # plt.show()
 if __name__ == '__main__':
     with open('../results/2_artists_1000.json') as j:

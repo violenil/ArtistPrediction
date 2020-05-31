@@ -7,8 +7,8 @@ class Song:
     def __init__(self, label: str, artist_id: int, song_name: str, lyrics: str) -> None:
         self.label = label
         self.artist_id = artist_id
-        self.song_name = self.word_tokenize(song_text=song_name)
-        shortend_lyrics = self.word_tokenize(song_text=lyrics)
+        self.song_name = word_tokenize(song_name)
+        shortend_lyrics = word_tokenize(lyrics)
         self.lyrics = shortend_lyrics
         tagged_lyrics = pos_tag(shortend_lyrics) #returns list of tuples [(word, tag), ...]
         self.tagged_lyrics = dict((x, y) for x, y in tagged_lyrics) # makes into dict {word:tag, word:tag, ...}
@@ -60,12 +60,12 @@ class Song:
 
         emotion_feature_vector = []
         for e in allEmotions:
-            vector.append(observed_emotions.count(e))
-        assert length(emotion_feature_vector) == 10
+            emotion_feature_vector.append(observed_emotions.count(e))
+        assert len(emotion_feature_vector) == 10
         return(emotion_feature_vector)
   
 
-    def extract_unique_song_features(self, nouns: Dict) -> None:
+    def extract_unique_song_features(self, wordAssociations: Dict, allEmotions: List) -> None:
         """
         This method extracts a set of features:
             8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
@@ -77,10 +77,11 @@ class Song:
             counts for 5 punctuation symbols (',','.','!','?',''')
         """
         feat_vec = []
-        # TO DO    
-        # need to somehow give the instance the NRC lexicon
-        allEmotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust', 'negative', 'positive']
-        emotion_feature_vector = extract_emotions(wordAssociations, allEmotions)
+        emotion_feature_vector = self.extract_emotions(wordAssociations, allEmotions)
+        feat_vec += emotion_feature_vector
+
+        self.feature_vector = feat_vec
+
 
 if __name__ == '__main__':
     s = Song('The Beatles', 1, 'Hills of green',
