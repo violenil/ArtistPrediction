@@ -10,12 +10,12 @@ from datetime import datetime
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-no_of_top_artist = 2
+no_of_top_artist = 129
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
-no_of_epochs = 1000
+no_of_epochs = 1
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -66,7 +66,6 @@ for word in s:
     if dict_of_word_count_in_all_songs[word] < marginal_length:
         vocab[word] = len(vocab)
 print(len(vocab))
-
 for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
     song.bow_feature_extraction(vocab)

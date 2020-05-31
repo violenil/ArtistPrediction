@@ -15,7 +15,7 @@ def plot_data(list_of_scores:List,yaxis_label:str, file_name:str )->None:
     fig.savefig("../Plots/"+file_name+".pdf")
     # plt.show()
 if __name__ == '__main__':
-    with open('../results/2_artists_1000.json') as j:
+    with open('../results/10_artists_500.json') as j:
         data=json.load(j)
-    plot_data(list_of_scores=data['macro_f_score'], yaxis_label='f_score',
-              file_name=str(data['no_of_artists']) + '_artists_' + str(data['no_of_epochs']))
+    plot_data(list_of_scores=data['macro_f_score'][:251], yaxis_label='macro_score',
+              file_name=str(data['no_of_artists']) + '_artists_macro_' + '250')

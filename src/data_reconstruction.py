@@ -15,6 +15,7 @@ def filter_content(data:pd.DataFrame,k:int)->pd.DataFrame:
             dict_of_artist_song_freq[artist] += 1
         else:
             dict_of_artist_song_freq[artist] = 1
+
     top_k_artists_and_freq=Counter(dict_of_artist_song_freq).most_common(k)
     top_k_artists=[artist for artist,freq in top_k_artists_and_freq]
     reduced_data=data.loc[data['artist'].isin(top_k_artists)]
@@ -33,6 +34,16 @@ def split_data(dt:List) ->Tuple[List,List,List]:
     total_validation_data = dt[total_train_data_len:total_train_data_len + total_validation_data_len]
     total_test_data = dt[total_validation_data_len + total_train_data_len:]
     return total_train_data, total_validation_data, total_test_data
+
+def make_batches(data:List, batch_size:int) -> List:
+    per_batch = []
+    list_with_batch = []
+    for e in data:
+        per_batch.append(e)
+        if len(per_batch) == batch_size:
+            list_with_batch.append(per_batch)
+            per_batch = []
+    return list_with_batch
 
 
 
