@@ -11,7 +11,7 @@ class Song:
         shortend_lyrics = self.word_tokenize(song_text=lyrics)
         self.lyrics = shortend_lyrics
         tagged_lyrics = pos_tag(shortend_lyrics) #returns list of tuples [(word, tag), ...]
-        self.tagged_lyrics = dict((y, x) for x, y in tagged_lyrics) # makes into dict {tag:word, tag:word, ...}
+        self.tagged_lyrics = dict((x, y) for x, y in tagged_lyrics) # makes into dict {word:tag, word:tag, ...}
         self.feature_vector = []
 
     def __str__(self) -> str:
@@ -44,7 +44,26 @@ class Song:
         # assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
     
-    def extract_emotions(self, 
+    def extract_emotions(self, wordAssociations: Dict, allEmotions: List) -> List:
+        """
+        first find all emotions that come up for the words in your lyrics (may want to exclude function words here using pos)
+        then count occurrence of all 8 emotions and neg and positive
+        return these as a list of counts of emotions in the given order --> list of length 10
+        """
+        reducedTokenTagDict = {word:tag for word, tag in self.tagged_lyrics.items() if tag in ['NN', 'NNP', 'NNS', 'PRP', 'RB', 'JJ', 'JJS', 'VB', 'VBD', 'VBG']}
+        reducedLyrics = list(reducedTokenTagDict.keys())
+        observed_emotions = [] # instances of all associated emotions
+
+        for word in reducedLyrics:
+            if word in wordAssociations.keys():
+                observed_emotions += wordAssociations[word]
+
+        emotion_feature_vector = []
+        for e in allEmotions:
+            vector.append(observed_emotions.count(e))
+        assert length(emotion_feature_vector) == 10
+        return(emotion_feature_vector)
+  
 
     def extract_unique_song_features(self, nouns: Dict) -> None:
         """
@@ -59,6 +78,9 @@ class Song:
         """
         feat_vec = []
         # TO DO    
+        # need to somehow give the instance the NRC lexicon
+        allEmotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust', 'negative', 'positive']
+        emotion_feature_vector = extract_emotions(wordAssociations, allEmotions)
 
 if __name__ == '__main__':
     s = Song('The Beatles', 1, 'Hills of green',
