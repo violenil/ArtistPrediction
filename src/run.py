@@ -47,8 +47,7 @@ training_data, validation_data, test_data = split_data(dt=list_of_song_instances
 """
 Get feature vector for all songs
 First create vocabulary of types in corpus of lyrics
-"""
-# list_of_feature_vectors = []
+list_of_feature_vectors = []
 # vocab = []  # list of tokens
 vocab = {}
 s = set()
@@ -66,8 +65,9 @@ for word in s:
     if dict_of_word_count_in_all_songs[word] < marginal_length:
         vocab[word] = len(vocab)
 print(len(vocab))
+"""
 
-
+list_of_feature_vectors = []
 """
 Feature Extraction
 """
@@ -83,8 +83,8 @@ for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
     song.extract_unique_song_features(wordAssociations, allEmotions)
     #song.bow_feature_extraction(vocab)
-    # list_of_feature_vectors.append(song.feature_vector)
-    # print(song.feature_vector)
+    list_of_feature_vectors.append(song.feature_vector)
+    print(song.feature_vector)
 for song in tqdm(validation_data, desc='Creating Feature_vector for validation'):
     song.extract_unique_song_features(wordAssociations, allEmotions)
     #song.bow_feature_extraction(vocab)
@@ -97,7 +97,7 @@ for song in tqdm(test_data, desc='Creating Feature_vector for testing'):
 Running  Multi_class_Perceptron
 """
 total_classes = list(dict_artistnames_to_indx.keys())
-m = MCP(classes=total_classes, weight_vec_length=len(vocab))
+m = MCP(classes=total_classes, weight_vec_length=28)  #was length of vocab before
 
 unique_artists = list(dict_artistnames_to_indx.values())
 list_of_evaluation_micro_scores = []
@@ -108,8 +108,8 @@ for epoch in range(no_of_epochs):
     list_of_actual_labels = []
 
     for song in tqdm(training_data, desc='Training'):
-        feature_vec = [0] * len(vocab)
-        for idx in song.feature_vector:
+        feature_vec = [0] * 28 #this is important (was length of vocab before) 
+        for idx in range(len(song.feature_vector)): #also changed this
             feature_vec[idx] = 1
         label = song.label
         dict_of_scores = m.find_all_scores(feature_vec)
@@ -119,8 +119,8 @@ for epoch in range(no_of_epochs):
         m.update_weight(actual_perceptron=actual_perceptron, predicted_perceptron=predicted_perceptron,
                         feature_vec=feature_vec)
     for song in tqdm(validation_data, desc='Validating'):
-        feature_vec=[0]*len(vocab)
-        for idx in song.feature_vector:
+        feature_vec=[0]*28 #was length of vocab before
+        for idx in range(len(song.feature_vector)): #and changed this iteration too
             feature_vec[idx]=1
         label=song.label
         dict_of_scores=m.find_all_scores(feature_vec)
@@ -157,8 +157,8 @@ with open('../results/' + str(no_of_top_artist) + '_artists_' + str(no_of_epochs
 list_of_actual_labels=[]
 list_of_predicted_labels=[]
 for song in tqdm(test_data, desc='Testing'):
-    feature_vec=[0]*len(vocab)
-    for idx in song.feature_vector:
+    feature_vec=[0]*28 #was length of vocab before 
+    for idx in range(len(song.feature_vector)):
         feature_vec[idx]=1
     label=song.label
     dict_of_scores=m.find_all_scores(feature_vec)
