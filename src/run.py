@@ -7,6 +7,8 @@ from data_reconstruction import filter_content, split_data
 import plot_data as pl
 import json
 from datetime import datetime
+from feature_extraction import extract_unique_song_features
+
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
