@@ -65,10 +65,7 @@ class Song:
 
         emotion_feature_vector = []
         for e in allEmotions:
-            if observed_emotions.count(e) > 4:
-                emotion_feature_vector.append(1)
-            else:
-                emotion_feature_vector.append(0)
+            emotion_feature_vector.append(observed_emotions.count(e))
         assert len(emotion_feature_vector) == 10
         return(emotion_feature_vector)
   
@@ -78,9 +75,7 @@ class Song:
         """
         #lyrics_list = list(self.tagged_lyrics.keys())
         lyrics_list = self.lyrics
-        if len(max(lyrics_list, key=len))>7:
-            return 1
-        else: return 0
+        return(len(max(lyrics_list, key=len)))
     
     def calculate_repetition_rate(self):
         """
@@ -89,9 +84,7 @@ class Song:
         """
         #lyrics_list = list(self.tagged_lyrics.keys())
         lyrics_list = self.lyrics
-        if int((len(set(lyrics_list))/len(lyrics_list))*10)>6:
-            return 1
-        else: return 0
+        return(int((len(set(lyrics_list))/len(lyrics_list))*10))
 
     def count_freq_nouns(self, popNouns: List) -> List:
         """
@@ -100,11 +93,7 @@ class Song:
         """
         popCount = []
         for w in popNouns:
-            if self.lyrics.count(w)>3:
-                popCount.append(1)
-            else:
-                popCount.append(0)
-            #popCount.append(self.lyrics.count(w))
+            popCount.append(self.lyrics.count(w))
         return(popCount)
 
     def extract_unique_song_features(self, wordAssociations: Dict, allEmotions: List) -> None:

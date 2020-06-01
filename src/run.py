@@ -109,7 +109,7 @@ for epoch in range(no_of_epochs):
 
     for song in tqdm(training_data, desc='Training'):
         feature_vec = [0] * 28 #this is important (was length of vocab before) 
-        for idx in range(len(song.feature_vector)): #also changed this
+        for idx in song.feature_vector:
             feature_vec[idx] = 1
         label = song.label
         dict_of_scores = m.find_all_scores(feature_vec)
@@ -120,7 +120,7 @@ for epoch in range(no_of_epochs):
                         feature_vec=feature_vec)
     for song in tqdm(validation_data, desc='Validating'):
         feature_vec=[0]*28 #was length of vocab before
-        for idx in range(len(song.feature_vector)): #and changed this iteration too
+        for idx in song.feature_vector:
             feature_vec[idx]=1
         label=song.label
         dict_of_scores=m.find_all_scores(feature_vec)
@@ -158,7 +158,7 @@ list_of_actual_labels=[]
 list_of_predicted_labels=[]
 for song in tqdm(test_data, desc='Testing'):
     feature_vec=[0]*28 #was length of vocab before 
-    for idx in range(len(song.feature_vector)):
+    for idx in song.feature_vector:
         feature_vec[idx]=1
     label=song.label
     dict_of_scores=m.find_all_scores(feature_vec)
