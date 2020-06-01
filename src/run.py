@@ -12,7 +12,7 @@ from feature_extraction import extract_unique_song_features
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-no_of_top_artist = 2
+no_of_top_artist = 20
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
