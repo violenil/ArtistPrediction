@@ -1,15 +1,24 @@
 from typing import List, Tuple, Dict, Set
-
+import torch
 import re
+import gensim
+import numpy as np
+
+embedding = gensim.models.KeyedVectors.load_word2vec_format(
+    '../benchmark/GoogleNews-vectors-negative300.bin', binary='True')
+
+_UNK_ = np.random.rand(embedding.vector_size)
+_PAD_STR_ = 'NUTUN_SOBDO'
+_PAD_VEC_ = [0] * embedding.vector_size
 
 
 class Song:
-    def __init__(self, label: str, artist_id: int, song_name: str, lyrics: str) -> None:
+    def __init__(self, label: str, song_name: str, lyrics: str, artist_id: int) -> None:
         self.label = label
         self.artist_id = artist_id
         self.song_name = self.get_tokenized_data(song_text=song_name)
-        shortend_lyrics = self.get_tokenized_data(song_text=lyrics)
-        self.lyrics = shortend_lyrics
+        tokenized_lyrics = self.get_tokenized_data(song_text=lyrics)
+        self.lyrics = self.resize_lyrics(tokenized_lyrics)
         self.feature_vector = []
 
     def __str__(self) -> str:
@@ -42,6 +51,24 @@ class Song:
                 feat_vec.append(idx)
         # assert len(vocab) == len(feat_vec)
         self.feature_vector = feat_vec
+
+    def resize_lyrics(self, tokenized_lyrics: List) -> List:
+        if len(tokenized_lyrics) > 75:
+            tokenized_lyrics = tokenized_lyrics[:75]
+        while len(tokenized_lyrics) < 75:
+            tokenized_lyrics.append(_PAD_STR_)
+        return tokenized_lyrics
+
+    def get_embedding(self) -> torch.Tensor:
+        list_with_embeddings = []
+        for word in self.lyrics:
+            if word == _PAD_STR_:
+                list_with_embeddings.append(_PAD_VEC_)
+            elif word not in embedding:
+                list_with_embeddings.append(_UNK_)
+            else:
+                list_with_embeddings.append(embedding[word])
+        return torch.FloatTensor(list_with_embeddings)
 
 
 if __name__ == '__main__':
