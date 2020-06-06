@@ -59,11 +59,11 @@ wordAssociations = dict(zip(newNRC['word'], newNRC['emotion'])) # this is the da
 
 allEmotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust', 'negative', 'positive']
 nouns = []
-with open("50MostFrequentNouns.txt") as f:
+with open("../benchmark/50MostFrequentNouns.txt") as f:
     nouns = f.read().splitlines()
 
 functionWords = []
-with open("50ProPrepDet.txt") as ff:
+with open("../benchmark/50ProPrepDet.txt") as ff:
     functionWords = ff.read().splitlines()
 
 for song in \
