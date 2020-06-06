@@ -11,12 +11,12 @@ from datetime import datetime
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-no_of_top_artist = 40
+no_of_top_artist = 600
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
-no_of_epochs =15 
+no_of_epochs =1 
 
 
 def get_artist_to_idx(artist: str) -> int:
