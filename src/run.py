@@ -7,17 +7,16 @@ from data_reconstruction import filter_content, split_data
 import plot_data as pl
 import json
 from datetime import datetime
-from feature_extraction import extract_unique_song_features
 
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-no_of_top_artist = 20
+no_of_top_artist = 10
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
-no_of_epochs = 1000
+no_of_epochs =10 
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -59,22 +58,29 @@ newNRC = NRC.groupby(['word']).agg(lambda x: tuple(x)).applymap(list).reset_inde
 wordAssociations = dict(zip(newNRC['word'], newNRC['emotion'])) # this is the database that you want to give to the feature extraction
 
 allEmotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust', 'negative', 'positive']
+nouns = []
+with open("50MostFrequentNouns.txt") as f:
+    nouns = f.read().splitlines()
+
+functionWords = []
+with open("50ProPrepDet.txt") as ff:
+    functionWords = ff.read().splitlines()
 
 for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
-    song.extract_unique_song_features(wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
     print(song.feature_vector)
 for song in tqdm(validation_data, desc='Creating Feature_vector for validation'):
-    song.extract_unique_song_features(wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
 
 for song in tqdm(test_data, desc='Creating Feature_vector for testing'):
-    song.extract_unique_song_features(wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
 
 """
 Running  Multi_class_Perceptron
 """
 total_classes = list(dict_artistnames_to_indx.keys())
-m = MCP(classes=total_classes, weight_vec_length=28)  #was length of vocab before
+m = MCP(classes=total_classes, weight_vec_length=119)  #was length of vocab before
 
 unique_artists = list(dict_artistnames_to_indx.values())
 list_of_evaluation_micro_scores = []

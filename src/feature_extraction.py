@@ -18,7 +18,7 @@ def bow_feature_extraction(self, vocab: Dict) -> None:
     # assert len(vocab) == len(feat_vec)
     self.feature_vector = feat_vec
 
-def extract_emotions(self, wordAssociations: Dict, allEmotions: List) -> List:
+def extract_emotions(lyrics: List, wordAssociations: Dict, allEmotions: List) -> List:
     """
     first find all emotions that come up for the words in your lyrics (may want to exclude function words here using pos)
     then count occurrence of all 8 emotions and neg and positive
@@ -29,10 +29,9 @@ def extract_emotions(self, wordAssociations: Dict, allEmotions: List) -> List:
     #I wanted to only process those words that have a particular tag, but the dict doesnt keep duplicates of words so this is not possible
     #TO DO
 
-    reducedLyrics = self.lyrics
     observed_emotions = [] # instances of all associated emotions
 
-    for word in reducedLyrics:
+    for word in lyrics:
         if word in wordAssociations.keys():
             observed_emotions += wordAssociations[word]
 
@@ -42,60 +41,27 @@ def extract_emotions(self, wordAssociations: Dict, allEmotions: List) -> List:
     assert len(emotion_feature_vector) == 10
     return(emotion_feature_vector)
 
-def find_length_of_longest(self):
+def find_length_of_longest(lyrics: List):
     """
     search list for longest word and return its length
     """
     #lyrics_list = list(self.tagged_lyrics.keys())
-    lyrics_list = self.lyrics
-    return(len(max(lyrics_list, key=len)))
+    return(len(max(lyrics, key=len)))
 
-def calculate_repetition_rate(self):
+def calculate_repetition_rate(lyrics: List):
     """
     repetition_rate would be the number of unique words in the lyrics divided by the total
     number of words in the lyrics
     """
     #lyrics_list = list(self.tagged_lyrics.keys())
-    lyrics_list = self.lyrics
-    return(int((len(set(lyrics_list))/len(lyrics_list))*10))
+    return(int((len(set(lyrics))/len(lyrics))*10))
 
-def count_freq_nouns(self, popNouns: List) -> List:
+def count_freq_nouns(lyrics: List, popNouns: List) -> List:
     """
     takes a list of popular nouns in songs (10 of them) and counts how frequently they occur in
     the lyrics, returning the list of counts
     """
     popCount = []
     for w in popNouns:
-        popCount.append(self.lyrics.count(w))
+        popCount.append(lyrics.count(w))
     return(popCount)
-
-def extract_unique_song_features(self, wordAssociations: Dict, allEmotions: List) -> None:
-    """
-    This method extracts a set of features:
-        8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
-        2 polarities (negative, positive)
-        length of longest word in song
-        repetition rate (unique_words/total_words)
-        count of \n chars
-        10 most frequent nouns in songs generally (love, time, way, day, baby, heart, life, night, gonna, man) --> freq count
-            (could also do binary for the above)
-        counts for 5 punctuation symbols (',','.','!','?',''') --> I added this to the above for now (same method)
-    """
-    feat_vec = []
-    emotion_feature_vector = self.extract_emotions(wordAssociations, allEmotions)
-    longest_word_length_feature = self.find_length_of_longest()
-    repetition_rate = self.calculate_repetition_rate()
-
-    popular_nouns = ["love", "time", "way", "day", "baby", "heart", "life", "night", "gonna", "man"]
-    freq_nouns_count = self.count_freq_nouns(popular_nouns)
-    freq_punct_count = self.count_freq_nouns([",",".","!","?","'"])
-
-    feat_vec += emotion_feature_vector
-    feat_vec.append(longest_word_length_feature)
-    feat_vec.append(repetition_rate)
-    feat_vec.append(self.lyrics.count("\n")) #count all \n chars, didn't need a method for that
-    feat_vec += freq_nouns_count
-    feat_vec += freq_punct_count
-
-    self.feature_vector = feat_vec
-
