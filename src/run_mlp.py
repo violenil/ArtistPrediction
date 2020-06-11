@@ -2,11 +2,16 @@ import pandas as pd
 from Song import Song, embedding
 from typing import List
 import utilities as utt
-from Classifier import Classifier
+from data_reconstruction import filter_content
 import torch
+import evaluation as eva
+from tqdm import tqdm
+from train_validation_test import run_epochs
+import numpy as np
 
 
 ### read file
+
 def read_file(file_name: str) -> pd.DataFrame:
     """
     Function that reads a file and returns its content
@@ -18,11 +23,16 @@ def read_file(file_name: str) -> pd.DataFrame:
     return content
 
 
-content = read_file(file_name='../benchmark/fewsongs.csv')
-print(content)
+content = read_file(file_name='../benchmark/songdata.csv')
+no_of_top_artist = 5
+# artists_list=["Queen", "The Beatles", "Michael Jackson", "Eminem", "INXS"]
+# content=content.loc[content['artist'].isin(artists_list)]
+content = filter_content(data=content, k=no_of_top_artist)
+content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
+
 no_of_artists = len(content['artist'].value_counts())
-print(no_of_artists)
 dict_artistnames_to_indx = {}
+print('Read File')
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -40,112 +50,50 @@ def get_artist_to_idx(artist: str) -> int:
 content['artist_id'] = content['artist'].apply(
     get_artist_to_idx)  # a new column gets created in the csv file with unique artist_id.
 
-
 ### find feature vector length
-def resize_lyrics(lyrics: str) -> str:
-    """
-    @param lyrics:
-    @return:
-    """
-    tokenized_lyrics=lyrics.split(' ')
-    length = 75
-    resized_lyrics=' '.join(tokenized_lyrics[:length])
-    return resized_lyrics
 
-
-content['text']=content['text'].apply(resize_lyrics)
-print(content['text'])
 ### Create song instances and keep it in a list
 list_of_song_instances = []
-for i in range(len(content)):
+for i in tqdm(range(len(content)), desc='Creating Song Instances'):
     song_instance = Song(label=content.iloc[i][0], song_name=content.iloc[i][1], lyrics=content.iloc[i][3],
                          artist_id=content.iloc[i][4])
     list_of_song_instances.append(song_instance)
 
 ### Split Data
 training_data_instances, validation_data_instances, test_data_instances = utt.split_data(dt=list_of_song_instances)
-batch_size = 2
+# print(len(training_data_instances), len(validation_data_instances))
+batch_size = 3
 
 ### Make batches
 training_data_instances_with_batches = utt.make_batches(data=training_data_instances, batch_size=batch_size)
 validation_data_instances_with_batches = utt.make_batches(data=validation_data_instances, batch_size=batch_size)
 test_data_instances_with_batches = utt.make_batches(data=test_data_instances, batch_size=batch_size)
 
-### training
 embedding_size = embedding.vector_size
+unique_artists = list(dict_artistnames_to_indx.values())
 
-classifier = Classifier(embedding_size=embedding_size, no_of_labels=no_of_artists)
-
-
-def train_network(training_data_instances_with_batches: List) -> float:
-    for batch in training_data_instances_with_batches:
-        list_of_labels = []
-        list_of_inputs = []
-        for song in batch:
-            label = song.artist_id
-            list_of_labels.append(label)
-            embedded_input = song.get_embedding()
-            list_of_inputs.append(embedded_input)
-        # inputs = torch.tensor(list_of_inputs)
-        # labels = torch.tensor(list_of_labels)
-        predicted_labels = classifier(embedded_input=list_of_inputs)
-        # calculate loss
-
-
-### validation
-def validate_network(validation_data_instances_with_batches) -> float:
-    for batch in validation_data_instances_with_batches:
-        list_of_labels = []
-        list_of_inputs = []
-        for song in batch:
-            label = song.artist_id
-            list_of_labels.append(label)
-            embedded_input = song.get_embedding()
-            list_of_inputs.append(embedded_input)
-        inputs = torch.FloatTensor(list_of_inputs)
-        labels = torch.FloatTensor(list_of_labels)
-        predicted_labels = classifier(embedded_input=inputs)
-    # evaluation
+# def test_network(test_data_instances_with_batches: List) -> float:
+#     list_of_actual_labels = []
+#     list_of_predicted_labels = []
+#     for batch in test_data_instances_with_batches:
+#         list_of_labels = []
+#         list_of_inputs = []
+#         for song in batch:
+#             label = song.artist_id
+#             list_of_labels.append(label)
+#             embedded_input = song.get_embedding()
+#             list_of_inputs.append(embedded_input)
+#         inputs = torch.FloatTensor(list_of_inputs)
+#         labels = torch.FloatTensor(list_of_labels)
+#         predicted_labels = classifier(embedded_input=inputs)
+#         list_of_predicted_labels_per_batch = []
+#         predicted_probabilities = classifier(embedded_input=inputs)
+#
+#         predicted_labels_per_batch = torch.argmax(predicted_probabilities, dim=1)
+#         list_of_predicted_labels.extend(predicted_labels_per_batch.tolist())
+#     return list_of_actual_labels, list_of_predicted_labels
 
 
-### testing
-def test_network(test_data_instances_with_batches: List) -> float:
-    for batch in test_data_instances_with_batches:
-        list_of_labels = []
-        list_of_inputs = []
-        for song in batch:
-            label = song.artist_id
-            list_of_labels.append(label)
-            embedded_input = song.get_embedding()
-            list_of_inputs.append(embedded_input)
-        inputs = torch.FloatTensor(list_of_inputs)
-        labels = torch.FloatTensor(list_of_labels)
-        predicted_labels = classifier(embedded_input=inputs)
-    # evaluation
+# def extend_batches_to_list():
 
-
-epoch = 10
-for i in range(epoch):
-    train_network(training_data_instances_with_batches)
-    validate_network(validation_data_instances_with_batches)
-test_network(test_data_instances_with_batches)
-"""
-read file
-find feature vec length
-create instances of songs
-split data
-make batches
-Song.py()
-    padding and truncating
-    embedding
-training
-    epoch - input
-        batch
-            get embedding
-            get labels
-            call classifier
-            loss calc
-
-validation
-    same as training + evaluation
-"""
+run_epochs(embedding_size, unique_artists, training_data_instances_with_batches, validation_data_instances_with_batches)

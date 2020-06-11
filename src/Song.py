@@ -3,13 +3,24 @@ import torch
 import re
 import gensim
 import numpy as np
+from nltk.tokenize import RegexpTokenizer
+
+from nltk.corpus import stopwords
+
+stop_words = set(stopwords.words('english'))
+
+from nltk.stem import PorterStemmer
+
+ps = PorterStemmer()
+
+tokenizer = RegexpTokenizer(r'\w+')
 
 embedding = gensim.models.KeyedVectors.load_word2vec_format(
     '../benchmark/GoogleNews-vectors-negative300.bin', binary='True')
 
-_UNK_ = np.random.rand(embedding.vector_size)
+_UNK_ = np.random.randn(embedding.vector_size)
 _PAD_STR_ = 'NUTUN_SOBDO'
-_PAD_VEC_ = [0] * embedding.vector_size
+_PAD_VEC_ = np.zeros(embedding.vector_size)
 
 
 class Song:
@@ -29,14 +40,24 @@ class Song:
         """
         called from get_data each time while we retrieve data from 'content' and return the tokens of the data.
         """
-        tokens = [match.group(0) for match in
-                  re.finditer(r"\w+|([^\w])\1*", song_text)]  # keeps punctuation and \n chars
+        # tokens = [match.group(0) for match in re.finditer(r"\w+|([^\w])\1*", song_text)]  # keeps punctuation and \n chars
+        tokens = tokenizer.tokenize(song_text)
+        stemmed_words = self.get_stem_data(tokens)
+        lyrics_without_stop_words = self.del_stopword(stemmed_words)
+        return lyrics_without_stop_words
 
-        # tokens = word_tokenize(song_text)
+    def get_stem_data(self, list_words):
+        list_stemmed_words = []
+        for word in list_words:
+            list_stemmed_words.append(ps.stem(word))
+        return list_stemmed_words
 
-        # tokens = song_text.split(' ')
-        # tokens = get_tokens(text=song_text, chars=[' ', ',', "'"])
-        return tokens
+    def del_stopword(self, list_words):
+        filtered_text = []
+        for word in list_words:
+            if word not in stop_words:
+                filtered_text.append(word)
+        return filtered_text
 
     def bow_feature_extraction(self, vocab: Dict) -> None:
         """
@@ -53,9 +74,10 @@ class Song:
         self.feature_vector = feat_vec
 
     def resize_lyrics(self, tokenized_lyrics: List) -> List:
-        if len(tokenized_lyrics) > 75:
-            tokenized_lyrics = tokenized_lyrics[:75]
-        while len(tokenized_lyrics) < 75:
+        token_length = 50
+        if len(tokenized_lyrics) > token_length:
+            tokenized_lyrics = tokenized_lyrics[:token_length]
+        while len(tokenized_lyrics) < token_length:
             tokenized_lyrics.append(_PAD_STR_)
         return tokenized_lyrics
 
@@ -68,7 +90,7 @@ class Song:
                 list_with_embeddings.append(_UNK_)
             else:
                 list_with_embeddings.append(embedding[word])
-        return torch.FloatTensor(list_with_embeddings)
+        return list_with_embeddings
 
 
 if __name__ == '__main__':
