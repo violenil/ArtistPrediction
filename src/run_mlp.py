@@ -6,7 +6,7 @@ from data_reconstruction import filter_content
 import torch
 import evaluation as eva
 from tqdm import tqdm
-from train_validation_test import run_epochs
+from train_validation_test import run_epochs, no_of_top_artist
 import numpy as np
 
 
@@ -24,7 +24,7 @@ def read_file(file_name: str) -> pd.DataFrame:
 
 
 content = read_file(file_name='../benchmark/songdata.csv')
-no_of_top_artist = 2
+
 # artists_list=["Queen", "The Beatles", "Michael Jackson", "Eminem", "INXS"]
 # content=content.loc[content['artist'].isin(artists_list)]
 content = filter_content(data=content, k=no_of_top_artist)
@@ -97,4 +97,4 @@ unique_artists = list(dict_artistnames_to_indx.values())
 
 # def extend_batches_to_list():
 
-run_epochs(embedding_size, unique_artists, training_data_instances_with_batches, validation_data_instances_with_batches)
+run_epochs(unique_artists, training_data_instances_with_batches, validation_data_instances_with_batches)

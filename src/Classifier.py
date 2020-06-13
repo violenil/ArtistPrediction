@@ -6,6 +6,7 @@ from typing import List
 class Classifier(nn.Module):
     def __init__(self, embedding_size: int, no_of_labels: int):
         super(Classifier, self).__init__()
+        self.name='using_RNN'
         self.bidirectional_RNN = True
         self.rnn = nn.GRU(input_size=embedding_size, hidden_size=200, batch_first=True,
                           bidirectional=self.bidirectional_RNN)

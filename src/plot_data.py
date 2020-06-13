@@ -15,7 +15,7 @@ def plot_data(list_of_scores: List, yaxis_label: str, file_name: str) -> None:
 
     #fig.savefig("../Plots/" + file_name + ".pdf")
     # plt.show()
-    fig.savefig("../otherPlots/" + file_name + ".pdf")
+    fig.savefig("../Plots/" + file_name + ".pdf")
 
 
 def plot_trainig_validation_loss(training_loss, validation_loss):

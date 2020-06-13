@@ -3,27 +3,55 @@ import torch
 import re
 import gensim
 import numpy as np
+import pandas as pd
 
 from nltk import word_tokenize, pos_tag
 import feature_extraction
 import fasttext
 
 from nltk.corpus import stopwords
+
 stop_words = set(stopwords.words('english'))
 
 from nltk.stem import PorterStemmer
+
 ps = PorterStemmer()
 from nltk.tokenize import RegexpTokenizer
+
 tokenizer = RegexpTokenizer(r'\w+')
 
-
-embedding = gensim.models.KeyedVectors.load_word2vec_format('../benchmark/GoogleNews-vectors-negative300.bin', binary='True')
-#embedding = fasttext.load_model('../benchmark/cc.en.300.bin')
+embedding = gensim.models.KeyedVectors.load_word2vec_format('../benchmark/GoogleNews-vectors-negative300.bin',
+                                                            binary='True')
+# embedding = fasttext.load_model('../benchmark/cc.en.300.bin')
 
 
 _UNK_ = np.random.randn(300)
 _PAD_STR_ = 'NUTUN_SOBDO'
 _PAD_VEC_ = np.zeros(300)
+
+"""
+Feature Extraction
+    - import NRCLexicon, which has word to emotion mappings
+    - create list of Plutchik emotions (8) + valence (2)
+    - create dictionary of wordAssociations: {word:[emotion, emotion], word:[emotion],...}
+    - create feature for each song!
+"""
+
+NRC = pd.read_csv('../benchmark/NRCLexicon.csv', sep='\t')
+newNRC = NRC.groupby(['word']).agg(lambda x: tuple(x)).applymap(
+    list).reset_index()  # because words have multiple emotions, want list of emotions per word
+wordAssociations = dict(zip(newNRC['word'], newNRC[
+    'emotion']))  # this is the database that you want to give to the feature extraction
+
+allEmotions = ['anger', 'fear', 'anticipation', 'trust', 'surprise', 'sadness', 'joy', 'disgust',
+               'negative', 'positive']
+nouns = []
+with open("../benchmark/50MostFrequentNouns.txt") as f:
+    nouns = f.read().splitlines()
+
+functionWords = []
+with open("../benchmark/50ProPrepDet.txt") as ff:
+    functionWords = ff.read().splitlines()
 
 
 class Song:
@@ -33,8 +61,6 @@ class Song:
         self.song_name = word_tokenize(song_name)
         tokenized_lyrics = word_tokenize(lyrics.lower())
         self.lyrics = self.resize_lyrics(tokenized_lyrics)
-
-        self.feature_vector = []
 
     def __str__(self) -> str:
         return self.label + ',' + str(self.song_name) + ',' + str(self.lyrics) + ',' + str(self.artist_id)
@@ -62,7 +88,8 @@ class Song:
                 filtered_text.append(word)
         return filtered_text
 
-    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List) -> None:
+    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict,
+                                     allEmotions: List) -> None:
         """
         This method extracts a set of features:
             8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
@@ -84,19 +111,18 @@ class Song:
 
         freq_nouns_count = feature_extraction.count_freq_nouns(self.lyrics, nouns)
         freq_func_count = feature_extraction.count_freq_nouns(self.lyrics, functionWords)
-        freq_punct_count = feature_extraction.count_freq_nouns(self.lyrics, [",",".","!","?","'"])
+        freq_punct_count = feature_extraction.count_freq_nouns(self.lyrics, [",", ".", "!", "?", "'"])
 
         feat_vec += emotion_feature_vector
         feat_vec.append(longest_word_length_feature)
         feat_vec.append(repetition_rate)
-        feat_vec.append(self.lyrics.count("\n")) #count all \n chars, didn't need a method for that
+        feat_vec.append(self.lyrics.count("\n"))  # count all \n chars, didn't need a method for that
         feat_vec += freq_nouns_count
         feat_vec += freq_func_count
         feat_vec += freq_punct_count
         feat_vec.append(len(self.song_name))
         feat_vec.append(1)
-        self.feature_vector = feat_vec
-
+        return feat_vec
 
     def resize_lyrics(self, tokenized_lyrics: List) -> List:
         token_length = 50
@@ -117,14 +143,11 @@ class Song:
                 list_with_embeddings.append(embedding[word])
         return list_with_embeddings
 
-    def get_feature_vector(self):
-        feature_vector_type='embedding'
-        if feature_vector_type=='manually selected feature':
-            return self.extract_unique_song_features()
-        elif feature_vector_type=='embedding':
+    def get_feature_vector(self, feature_vector_type):
+        if feature_vector_type == 'manual_features':
+            return self.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
+        elif feature_vector_type == 'RNN':
             return self.get_embedding()
-
-
 
 
 if __name__ == '__main__':
