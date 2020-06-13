@@ -11,12 +11,12 @@ def matrix_multiplication(vector_1=List, vector_2=List)->List:
 
 def split_data(dt:List) ->Tuple[List,List,List]:
     """
-    split data into train and validation and test data. We make a 80,10,10 split.
+    split data into train and validation and test data. We make a 90,5,5 split.
     :param dt: The list of our retrieved and processed data
     :return: total training, validation and test data.
     """
-    total_train_data_len = int(len(dt) * 0.8)
-    total_validation_data_len = int(len(dt) * 0.1)
+    total_train_data_len = int(len(dt) * 0.9)
+    total_validation_data_len = int(len(dt) * 0.05)
     total_test_data_len = len(dt) - (total_train_data_len + total_validation_data_len)
     total_train_data = dt[:total_train_data_len]
     total_validation_data = dt[total_train_data_len:total_train_data_len + total_validation_data_len]

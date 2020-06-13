@@ -24,7 +24,7 @@ def read_file(file_name: str) -> pd.DataFrame:
 
 
 content = read_file(file_name='../benchmark/songdata.csv')
-no_of_top_artist = 5
+no_of_top_artist = 2
 # artists_list=["Queen", "The Beatles", "Michael Jackson", "Eminem", "INXS"]
 # content=content.loc[content['artist'].isin(artists_list)]
 content = filter_content(data=content, k=no_of_top_artist)
@@ -62,14 +62,15 @@ for i in tqdm(range(len(content)), desc='Creating Song Instances'):
 ### Split Data
 training_data_instances, validation_data_instances, test_data_instances = utt.split_data(dt=list_of_song_instances)
 # print(len(training_data_instances), len(validation_data_instances))
-batch_size = 3
+batch_size = 15
 
 ### Make batches
 training_data_instances_with_batches = utt.make_batches(data=training_data_instances, batch_size=batch_size)
 validation_data_instances_with_batches = utt.make_batches(data=validation_data_instances, batch_size=batch_size)
 test_data_instances_with_batches = utt.make_batches(data=test_data_instances, batch_size=batch_size)
 
-embedding_size = embedding.vector_size
+# embedding_size = embedding.vector_size
+embedding_size = 300
 unique_artists = list(dict_artistnames_to_indx.values())
 
 # def test_network(test_data_instances_with_batches: List) -> float:

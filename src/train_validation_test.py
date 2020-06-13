@@ -14,7 +14,7 @@ TRAINING
 device = torch.device(
     'cuda:0' if torch.cuda.is_available() else 'cpu')
 
-classifier = Classifier(embedding_size=300, no_of_labels=5)
+classifier = Classifier(embedding_size=300, no_of_labels=2)
 classifier.to(device)
 lr = 5.0  # initial learning rate
 optimizer = torch.optim.Adam(classifier.parameters(),
@@ -33,7 +33,7 @@ def train_network(training_data_instances_with_batches: List) -> float:
         for song in batch:
             label = song.artist_id
             list_of_labels_per_batch.append(label)
-            embedded_input = song.get_embedding()
+            embedded_input = song.get_feature_vector()
             list_of_inputs.append(embedded_input)
         inputs = torch.FloatTensor(list_of_inputs)
         inputs = inputs.to(device)
@@ -64,7 +64,7 @@ def validate_network(validation_data_instances_with_batches: List) -> float:
             for song in batch:
                 label = song.artist_id
                 list_of_labels_per_batch.append(label)
-                embedded_input = song.get_embedding()
+                embedded_input = song.get_feature_vector()
                 list_of_inputs.append(embedded_input)
             inputs = torch.FloatTensor(list_of_inputs)
             inputs = inputs.to(device)
@@ -91,13 +91,13 @@ def run_epochs(embedding_size, unique_artists, training_data_instances_with_batc
     for epoch in range(no_of_epoch):
         mean_loss_of_training = train_network(training_data_instances_with_batches)
         labels, predicted_labels, mean_loss_of_validation = validate_network(validation_data_instances_with_batches)
-        evaluation,accuracy = eva.evaluate_predictions(labels, predicted_labels,
+        evaluation = eva.evaluate_predictions(labels, predicted_labels,
                                               unique_artists)
         micro_scores_dict = eva.micro_scores(evaluation)
         macro_scores_dict = eva.macro_scores(evaluation)
 
         print(
-            f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]},ac={evaluation["ACC"]}, lr={scheduler.get_last_lr()[0]}')
+            f'epoch= {epoch + 1}, micro_f_score= {micro_scores_dict["microF1"]}, macro_f_score= {macro_scores_dict["macroF1"]}, lr={scheduler.get_last_lr()[0]}')
         list_mean_loss_of_training.append(mean_loss_of_training)
         list_of_mean_loss_of_validation.append(mean_loss_of_validation)
         print(mean_loss_of_training, '\n', mean_loss_of_validation)

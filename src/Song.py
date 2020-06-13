@@ -4,23 +4,24 @@ import re
 import gensim
 import numpy as np
 from nltk.tokenize import RegexpTokenizer
+import fasttext
 
 from nltk.corpus import stopwords
-
 stop_words = set(stopwords.words('english'))
 
 from nltk.stem import PorterStemmer
-
 ps = PorterStemmer()
 
 tokenizer = RegexpTokenizer(r'\w+')
 
-embedding = gensim.models.KeyedVectors.load_word2vec_format(
-    '../benchmark/GoogleNews-vectors-negative300.bin', binary='True')
 
-_UNK_ = np.random.randn(embedding.vector_size)
+embedding = gensim.models.KeyedVectors.load_word2vec_format('../benchmark/GoogleNews-vectors-negative300.bin', binary='True')
+#embedding = fasttext.load_model('../benchmark/cc.en.300.bin')
+
+
+_UNK_ = np.random.randn(300)
 _PAD_STR_ = 'NUTUN_SOBDO'
-_PAD_VEC_ = np.zeros(embedding.vector_size)
+_PAD_VEC_ = np.zeros(300)
 
 
 class Song:
@@ -92,6 +93,14 @@ class Song:
                 list_with_embeddings.append(embedding[word])
         return list_with_embeddings
 
+    def get_feature_vector(self):
+        feature_vector_type='embedding'
+        if feature_vector_type=='bow_feature':
+            return self.bow_feature_extraction()
+        elif feature_vector_type=='embedding':
+            return self.get_embedding()
+        elif feature_vector_type=='manually selected feature':
+            pass
 
 if __name__ == '__main__':
     s = Song('The Beatles', 1, 'Hills of green',

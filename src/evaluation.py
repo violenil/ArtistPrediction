@@ -18,7 +18,7 @@ def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, l
     :param list_of_artists: The list of all the artists in our dataset. E.g. [1,2,3,4,5,6,7,8]
     :return: a dictionary of TP, FP, FN and TN which looks like {TP:[], FP:[], FN:[], TN:[]}
     """
-    list_acc = []
+    #list_acc = []
     dict_of_results = {'TP': [], 'FP': [], 'FN': [], 'TN': []}
     for artist in list_of_artists:  # looping through each class (artist) at a time
         tp = 0
@@ -44,13 +44,13 @@ def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, l
         dict_of_results['FN'].append(fn)
         dict_of_results['TN'].append(
             tn)  # Note: I haven't given any thought to tn, how to calculate this? Does it matter?
-        acc = (tp + tn) / (tp + fn + fp + tn)
+        #acc = (tp + tn) / (tp + fn + fp + tn)
         #acc = 0
-        list_acc.append(acc)
+        #list_acc.append(acc)
         assert len(dict_of_results['TP']) == len(dict_of_results['FP']) and len(dict_of_results['FP']) == len(
             dict_of_results['FN'])  # just to ensure they are same len
-    mean_acc = sum(list_acc) / len(list_acc)
-    dict_of_results['ACC'] = mean_acc
+    #mean_acc = sum(list_acc) / len(list_acc)
+    #dict_of_results['ACC'] = mean_acc
     return dict_of_results
 
 

@@ -7,12 +7,12 @@ class Classifier(nn.Module):
     def __init__(self, embedding_size: int, no_of_labels: int):
         super(Classifier, self).__init__()
         self.bidirectional_RNN = True
-        self.rnn = nn.GRU(input_size=embedding_size, hidden_size=300, batch_first=True,
+        self.rnn = nn.GRU(input_size=embedding_size, hidden_size=200, batch_first=True,
                           bidirectional=self.bidirectional_RNN)
         n = 1
         if self.bidirectional_RNN:
             n = 2
-        self.linear_classifier = nn.Linear(in_features=300 * n, out_features=no_of_labels)
+        self.linear_classifier = nn.Linear(in_features=200, out_features=no_of_labels)
         self.softmax = nn.LogSoftmax(dim=1)
         """
         why dim =1?
@@ -44,7 +44,7 @@ class Classifier(nn.Module):
     def forward(self, embedded_input: torch.Tensor) -> torch.Tensor:
         output, hidden_size = self.rnn(embedded_input)
         if self.bidirectional_RNN == True:
-            hidden_size = torch.cat((hidden_size[0], hidden_size[1]), 1)
+            hidden_size = (hidden_size[0, :, :] + hidden_size[1, :, :])
         else:
             hidden_size = torch.squeeze(hidden_size)  # to change the dimension of hidden layer from[1,3,600] to [3,600]
         predicted_value = self.linear_classifier(hidden_size)

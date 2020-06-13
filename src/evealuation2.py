@@ -20,7 +20,7 @@ def evaluation_of_prediction(labels: List, predicted_labels: List) -> Tuple[floa
     if tp + fp:
         precision = tp / (tp + fp)
         recall = tp / (tp + fn)
-        accuracy = (tp + tn) / (tp + tn + fp + fn)
+        #accuracy = (tp + tn) / (tp + tn + fp + fn)
         if precision and recall:
             fscore = (2 * precision * recall) / (precision + recall)
         else:
