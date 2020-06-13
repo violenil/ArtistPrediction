@@ -3,7 +3,9 @@ import torch
 import re
 import gensim
 import numpy as np
-from nltk.tokenize import RegexpTokenizer
+
+from nltk import word_tokenize, pos_tag
+import feature_extraction
 import fasttext
 
 from nltk.corpus import stopwords
@@ -11,7 +13,7 @@ stop_words = set(stopwords.words('english'))
 
 from nltk.stem import PorterStemmer
 ps = PorterStemmer()
-
+from nltk.tokenize import RegexpTokenizer
 tokenizer = RegexpTokenizer(r'\w+')
 
 
@@ -28,13 +30,13 @@ class Song:
     def __init__(self, label: str, song_name: str, lyrics: str, artist_id: int) -> None:
         self.label = label
         self.artist_id = artist_id
-        self.song_name = self.get_tokenized_data(song_text=song_name)
-        tokenized_lyrics = self.get_tokenized_data(song_text=lyrics)
+        self.song_name = word_tokenize(song_name)
+        tokenized_lyrics = word_tokenize(lyrics.lower())
         self.lyrics = self.resize_lyrics(tokenized_lyrics)
+
         self.feature_vector = []
 
     def __str__(self) -> str:
-
         return self.label + ',' + str(self.song_name) + ',' + str(self.lyrics) + ',' + str(self.artist_id)
 
     def get_tokenized_data(self, song_text: str) -> List:
@@ -60,19 +62,41 @@ class Song:
                 filtered_text.append(word)
         return filtered_text
 
-    def bow_feature_extraction(self, vocab: Dict) -> None:
+    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List) -> None:
         """
-        this method considers bag of words model for feature extraction
-        the vocab for this method needs to be created elsewhere, consisting of all types in our
-        song collection
+        This method extracts a set of features:
+            8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
+            2 polarities (negative, positive)
+            length of longest word in song
+            repetition rate (unique_words/total_words)
+            count of \n chars
+            50 most frequent nouns in songs generally (love, time, way, day, ...) --> freq count
+                (could also do binary for the above)
+            50 most frequent function words (contains pronouns like eg. "I" and "you", determiners eg. "the" and "a" and prepositions eg. "in")
+            5 punctuation symbols (',','.','!','?',''') --> same method as above
+            1 count for song name length
+            1 feature set to 1 for all songs
         """
         feat_vec = []
-        for word in self.lyrics:
-            if word in vocab:
-                idx = vocab[word]
-                feat_vec.append(idx)
-        # assert len(vocab) == len(feat_vec)
+        emotion_feature_vector = feature_extraction.extract_emotions(self.lyrics, wordAssociations, allEmotions)
+        longest_word_length_feature = feature_extraction.find_length_of_longest(self.lyrics)
+        repetition_rate = feature_extraction.calculate_repetition_rate(self.lyrics)
+
+        freq_nouns_count = feature_extraction.count_freq_nouns(self.lyrics, nouns)
+        freq_func_count = feature_extraction.count_freq_nouns(self.lyrics, functionWords)
+        freq_punct_count = feature_extraction.count_freq_nouns(self.lyrics, [",",".","!","?","'"])
+
+        feat_vec += emotion_feature_vector
+        feat_vec.append(longest_word_length_feature)
+        feat_vec.append(repetition_rate)
+        feat_vec.append(self.lyrics.count("\n")) #count all \n chars, didn't need a method for that
+        feat_vec += freq_nouns_count
+        feat_vec += freq_func_count
+        feat_vec += freq_punct_count
+        feat_vec.append(len(self.song_name))
+        feat_vec.append(1)
         self.feature_vector = feat_vec
+
 
     def resize_lyrics(self, tokenized_lyrics: List) -> List:
         token_length = 50
@@ -95,12 +119,13 @@ class Song:
 
     def get_feature_vector(self):
         feature_vector_type='embedding'
-        if feature_vector_type=='bow_feature':
-            return self.bow_feature_extraction()
+        if feature_vector_type=='manually selected feature':
+            return self.extract_unique_song_features()
         elif feature_vector_type=='embedding':
             return self.get_embedding()
-        elif feature_vector_type=='manually selected feature':
-            pass
+
+
+
 
 if __name__ == '__main__':
     s = Song('The Beatles', 1, 'Hills of green',

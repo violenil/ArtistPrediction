@@ -13,8 +13,9 @@ def plot_data(list_of_scores: List, yaxis_label: str, file_name: str) -> None:
     ax.set(xlabel='epoch', ylabel=yaxis_label)
     ax.grid()
 
-    fig.savefig("../Plots/" + file_name + ".pdf")
+    #fig.savefig("../Plots/" + file_name + ".pdf")
     # plt.show()
+    fig.savefig("../otherPlots/" + file_name + ".pdf")
 
 
 def plot_trainig_validation_loss(training_loss, validation_loss):
@@ -27,13 +28,14 @@ def plot_trainig_validation_loss(training_loss, validation_loss):
     ax.grid()
     ax.legend()
     ax.set(xlabel='epoch', ylabel='loss')
+
     # plt.show()
     fig.savefig("../Plots/" + 'training_validation_loss' + ".pdf")
 
 
 if __name__ == '__main__':
-    # with open('../results/10_artists_500.json') as j:
-    #     data = json.load(j)
-    # plot_data(list_of_scores=data['macro_f_score'][:251], yaxis_label='macro_score',
-    #           file_name=str(data['no_of_artists']) + '_artists_macro_' + '250')
+    with open('../results/2_artists_1000.json') as j:
+        data=json.load(j)
+    plot_data(list_of_scores=data['macro_f_score'], yaxis_label='f_score',
+              file_name=str(data['no_of_artists']) + '_artists_' + str(data['no_of_epochs']))
     plot_trainig_validation_loss([2, 3, 1, 4, 5], [5, 2, 1, 3, 5])
