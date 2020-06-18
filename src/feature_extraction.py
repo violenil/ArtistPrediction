@@ -1,6 +1,7 @@
 from typing import List, Tuple, Dict, Set
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
+import pandas as pd
 """
 Here are all the functions for extracting features. 'bow_feature_extraction' is also here.
 """
@@ -68,8 +69,7 @@ def count_freq_nouns(lyrics: List, popNouns: List) -> List:
         popCount.append(lyrics.count(w))
     return(popCount)
 
-def tf_idf_score(tfidf_transformer, lyrics: String):
-    vectorizer = CountVectorizer()
+def calculate_tfidf_score(tfidf_transformer, vectorizer, lyrics: str):
     doc_count_vector = vectorizer.transform([lyrics]) #this is a count vector for this particular document
     tfidf_vector = tfidf_transformer.transform(doc_count_vector) #global tf-idf scores for all words in this doc
     feature_names = vectorizer.get_feature_names()

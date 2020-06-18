@@ -17,7 +17,7 @@ class Song:
     def __str__(self) -> str:
         return self.label + ',' + str(self.song_name) + ',' + str(self.lyrics) + ',' + str(self.artist_id)
 
-    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List, tfidf_transformer) -> None:
+    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List, tfidf_transformer, vectorizer) -> None:
         """
         This method extracts a set of features:
             8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
@@ -31,7 +31,8 @@ class Song:
             50 most frequent function words (contains pronouns like eg. "I" and "you", determiners eg. "the" and "a" and prepositions eg. "in")
             5 punctuation symbols (',','.','!','?',''') --> same method as above
             1 count for song name length
-            1 feature set to 1 for all songs
+            1 feature set to 1 for all songs (left this out)
+            tfidf score for a song
         """
         feat_vec = []
         emotion_feature_vector = feature_extraction.extract_emotions(self.lyrics, wordAssociations, allEmotions)
@@ -42,7 +43,7 @@ class Song:
         freq_func_count = feature_extraction.count_freq_nouns(self.lyrics, functionWords)
         freq_punct_count = feature_extraction.count_freq_nouns(self.lyrics, [",",".","!","?","'"])
 
-        tfidf_score = feature_extraction.calculate_tfidf_score(tfidf_transformer, self.string_of_lyrics)
+        tfidf_score = feature_extraction.calculate_tfidf_score(tfidf_transformer, vectorizer, self.string_of_lyrics)
 
         feat_vec += emotion_feature_vector
         feat_vec.append(longest_word_length_feature)
