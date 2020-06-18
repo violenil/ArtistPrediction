@@ -7,6 +7,8 @@ from data_reconstruction import filter_content, split_data
 import plot_data as pl
 import json
 from datetime import datetime
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 
 
 print('Reading File')
@@ -53,7 +55,7 @@ Feature Extraction
     - create feature for each song!
 """
 
-NRC = pd.read_csv('../benchmark/NRCLexicon.csv',sep='\t') 
+NRC = pd.read_csv('../benchmark/NRCLexicon.csv',sep='\t')
 newNRC = NRC.groupby(['word']).agg(lambda x: tuple(x)).applymap(list).reset_index() #because words have multiple emotions, want list of emotions per word
 wordAssociations = dict(zip(newNRC['word'], newNRC['emotion'])) # this is the database that you want to give to the feature extraction
 
@@ -66,15 +68,21 @@ functionWords = []
 with open("../benchmark/50ProPrepDet.txt") as ff:
     functionWords = ff.read().splitlines()
 
+#unigram tfidf scores
+vectorizer = CountVectorizer()
+count_vector = vectorizer.fit_transform(content[3])#count vector for all documents (I know this is naughty...)
+tfidf_transformer = TfidfTransformer(smooth_idf=True, use_idf=True)
+tfidf_transformer.fit(count_vector) #learns the global idf vector
+
 for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer)
     #print(song.feature_vector)
 for song in tqdm(validation_data, desc='Creating Feature_vector for validation'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer)
 
 for song in tqdm(test_data, desc='Creating Feature_vector for testing'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer)
 
 """
 Running  Multi_class_Perceptron
