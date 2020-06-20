@@ -9,13 +9,14 @@ from plot_data import plot_trainig_validation_loss
 import plot_data as pl
 import json
 from datetime import datetime
+from Classifier_with_cnn import Classifier_using_cnn
 
 """
 TRAINING
 """
-no_of_top_artist = 5
+no_of_top_artist = 2
 no_of_epochs = 100
-model_name = ['RNN', 'manual_features'][1]# also change song.py
+model_name = ['RNN', 'manual_features', 'CNN'][2]# also change song.py
 
 device = torch.device(
     'cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -25,6 +26,9 @@ if model_name == 'RNN':
 elif model_name == 'manual_features':
     classifier = Classifier_manual_features(embedding_size=120,
                                             no_of_labels=no_of_top_artist)  # To access the classifier that uses manual_features
+elif model_name=='CNN':
+    classifier = Classifier_using_cnn(embedding_size=300, no_of_labels=no_of_top_artist)
+
 classifier.to(device)
 # lr = 5.0  # initial learning rate
 optimizer = torch.optim.Adam(

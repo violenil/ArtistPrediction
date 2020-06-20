@@ -143,10 +143,14 @@ class Song:
                 list_with_embeddings.append(embedding[word])
         return list_with_embeddings
 
-    def get_feature_vector(self, feature_vector_type):
+    def get_feature_vector(self, feature_vector_type=None):
+        assert feature_vector_type is not None, 'feature_vector type not selected'
+
         if feature_vector_type == 'manual_features':
             return self.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
         elif feature_vector_type == 'RNN':
+            return self.get_embedding()
+        elif feature_vector_type == 'CNN':
             return self.get_embedding()
 
 
