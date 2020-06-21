@@ -13,12 +13,12 @@ from sklearn.feature_extraction.text import TfidfTransformer
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
-no_of_top_artist =2
+no_of_top_artist =20
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
-no_of_epochs = 1000
+no_of_epochs =400
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -79,20 +79,26 @@ count_vector = vectorizer.fit_transform(list_of_texts)#count vector for all trai
 tfidf_transformer = TfidfTransformer(smooth_idf=True, use_idf=True)
 tfidf_transformer.fit(count_vector) #learns the global idf vector
 
+#bigram tfidf scores
+bi_vectorizer = CountVectorizer(analyzer='word', ngram_range=(2,2))
+bi_count_vector = bi_vectorizer.fit_transform(list_of_texts)#also a count vector but with bigrams
+bi_tfidf_transformer = TfidfTransformer(smooth_idf=True, use_idf=True)
+bi_tfidf_transformer.fit(bi_count_vector)
+
 for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer)
 for song in tqdm(validation_data, desc='Creating Feature_vector for validation'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer)
 
 for song in tqdm(test_data, desc='Creating Feature_vector for testing'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer)
 
 """
 Running  Multi_class_Perceptron
 """
 total_classes = list(dict_artistnames_to_indx.keys())
-m = MCP(classes=total_classes, weight_vec_length=121)  #was length of vocab before
+m = MCP(classes=total_classes, weight_vec_length=122)  #was length of vocab before
 
 unique_artists = list(dict_artistnames_to_indx.values())
 list_of_evaluation_micro_scores = []
@@ -148,7 +154,7 @@ with open('../results/' + str(no_of_top_artist) + '_artists_' + str(no_of_epochs
 list_of_actual_labels=[]
 list_of_predicted_labels=[]
 for song in tqdm(test_data, desc='Testing'):
-    feature_vec = song.feature_vector 
+    feature_vec = song.feature_vector
     label=song.label
     dict_of_scores=m.find_all_scores(feature_vec)
     predicted_perceptron, max_score = m.find_max(dict_of_scores=dict_of_scores)

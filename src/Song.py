@@ -17,7 +17,7 @@ class Song:
     def __str__(self) -> str:
         return self.label + ',' + str(self.song_name) + ',' + str(self.lyrics) + ',' + str(self.artist_id)
 
-    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List, tfidf_transformer, vectorizer) -> None:
+    def extract_unique_song_features(self, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List, tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer) -> None:
         """
         This method extracts a set of features:
             8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
@@ -44,6 +44,7 @@ class Song:
         freq_punct_count = feature_extraction.count_freq_nouns(self.lyrics, [",",".","!","?","'"])
 
         tfidf_score = feature_extraction.calculate_tfidf_score(tfidf_transformer, vectorizer, self.string_of_lyrics)
+        bi_tfidf_score = feature_extraction.calculate_tfidf_score(bi_tfidf_transformer, bi_vectorizer, self.string_of_lyrics)
 
         feat_vec += emotion_feature_vector
         feat_vec.append(longest_word_length_feature)
@@ -56,6 +57,7 @@ class Song:
         feat_vec.append(len(self.song_name))
         #feat_vec.append(1)
         feat_vec.append(tfidf_score)
+        feat_vec.append(bi_tfidf_score)
 
         self.feature_vector = feat_vec
 

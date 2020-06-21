@@ -71,10 +71,10 @@ def count_freq_nouns(lyrics: List, popNouns: List) -> List:
 
 def calculate_tfidf_score(tfidf_transformer, vectorizer, lyrics: str):
     doc_count_vector = vectorizer.transform([lyrics]) #this is a count vector for this particular document
-    tfidf_vector = tfidf_transformer.transform(doc_count_vector) #global tf-idf scores for all words in this doc
+    tfidf_vector = tfidf_transformer.transform(doc_count_vector) #global tf-idf scores for all ngrams in this doc
     feature_names = vectorizer.get_feature_names()
     df = pd.DataFrame(tfidf_vector.T.todense(), index=feature_names, columns=["tfidf"])
-    reduced_df = df.sort_values(by=['tfidf'], ascending=False).head(20)
+    reduced_df = df.sort_values(by=['tfidf'], ascending=False).head(50)
     tfidf_score = round(reduced_df['tfidf'].mean()*10, 3)
     return tfidf_score
 
