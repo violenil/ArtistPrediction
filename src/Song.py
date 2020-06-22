@@ -4,25 +4,43 @@ import re
 import gensim
 import numpy as np
 import pandas as pd
-
 from nltk import word_tokenize, pos_tag
 import feature_extraction
 import fasttext
-
 from nltk.corpus import stopwords
 
 stop_words = set(stopwords.words('english'))
-
 from nltk.stem import PorterStemmer
 
 ps = PorterStemmer()
 from nltk.tokenize import RegexpTokenizer
 
 tokenizer = RegexpTokenizer(r'\w+')
+regex = re.compile('[^a-zA-Z]')
 
-embedding = gensim.models.KeyedVectors.load_word2vec_format('../benchmark/GoogleNews-vectors-negative300.bin',
-                                                            binary='True')
+
+def loadGloveModel(File):
+    """
+    reads pretrained glove embedding file and put all words and there embeddings in a dictionary
+    @param File:
+    @return: a dictionary with key as words and their embeddings as value
+    """
+    # print("Loading Glove Model")
+    f = open(File, 'r')
+    gloveModel = {}
+    for line in f:
+        splitLines = line.split()
+        word = splitLines[0]
+        wordEmbedding = np.array([float(value) for value in splitLines[1:]])
+        gloveModel[word] = wordEmbedding
+    # print(len(gloveModel)," words loaded!")
+    return gloveModel
+
+
+### LOAD PRETRAINED EMBEDDINGS
+# embedding = gensim.models.KeyedVectors.load_word2vec_format('../benchmark/GoogleNews-vectors-negative300.bin', binary='True')
 # embedding = fasttext.load_model('../benchmark/cc.en.300.bin')
+embedding = loadGloveModel('../benchmark/glove.6B/glove.6B.300d.txt')
 
 
 _UNK_ = np.random.randn(300)
@@ -60,6 +78,7 @@ class Song:
         self.artist_id = artist_id
         self.song_name = word_tokenize(song_name)
         tokenized_lyrics = word_tokenize(lyrics.lower())
+        tokenized_lyrics = self.del_stopword(tokenized_lyrics)
         self.lyrics = self.resize_lyrics(tokenized_lyrics)
 
     def __str__(self) -> str:
@@ -80,6 +99,12 @@ class Song:
         for word in list_words:
             list_stemmed_words.append(ps.stem(word))
         return list_stemmed_words
+
+    def remove_non_letters(self, list_words):
+        n_l = []
+        for w in list_words:
+            n_l.append(regex.sub('', w))
+        return n_l
 
     def del_stopword(self, list_words):
         filtered_text = []
@@ -125,7 +150,7 @@ class Song:
         return feat_vec
 
     def resize_lyrics(self, tokenized_lyrics: List) -> List:
-        token_length = 50
+        token_length = 200
         if len(tokenized_lyrics) > token_length:
             tokenized_lyrics = tokenized_lyrics[:token_length]
         while len(tokenized_lyrics) < token_length:

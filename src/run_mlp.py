@@ -25,8 +25,8 @@ def read_file(file_name: str) -> pd.DataFrame:
 
 content = read_file(file_name='../benchmark/songdata.csv')
 
-# artists_list=["Queen", "The Beatles", "Michael Jackson", "Eminem", "INXS"]
-# content=content.loc[content['artist'].isin(artists_list)]
+# artists_list = ["Queen", "The Beatles", "Michael Jackson", "Eminem", "INXS"]
+# content = content.loc[content['artist'].isin(artists_list)]
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 
