@@ -32,7 +32,8 @@ class Song:
             5 punctuation symbols (',','.','!','?',''') --> same method as above
             1 count for song name length
             1 feature set to 1 for all songs (left this out)
-            tfidf score for a song
+            unigram tfidf score for a song
+            bigram tfidf score for a song
         """
         feat_vec = []
         emotion_feature_vector = feature_extraction.extract_emotions(self.lyrics, wordAssociations, allEmotions)
