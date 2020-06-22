@@ -15,7 +15,7 @@ from Classifier_with_cnn import Classifier_using_cnn
 TRAINING
 """
 no_of_top_artist = 2
-no_of_epochs = 50
+no_of_epochs = 100
 model_name = ['RNN', 'manual_features', 'CNN'][2]  # also change song.py
 
 device = torch.device(
