@@ -3,22 +3,24 @@ from Song import Song
 import evaluation as eva
 from Multi_class_Perceptron import MCP
 from tqdm import tqdm
-from data_reconstruction import filter_content, split_data
+from data_reconstruction import filter_content
 import plot_data as pl
 import json
 from datetime import datetime
-
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+import utilities as utt
 
 print('Reading File')
 content = pd.read_csv('../benchmark/songdata.csv', delimiter=',')
 
-no_of_top_artist = 400
+no_of_top_artist =200
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 dict_artistnames_to_indx = {}
 print('Read File')
 
-no_of_epochs =1 
+no_of_epochs =40
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -38,13 +40,18 @@ content['artist_id'] = content['artist'].apply(
 list_of_song_instances = []
 for i in tqdm(range(len(content)), desc='Creating Song instances'):
     """
-    Instances of each songs gets created. And the label, artist_id, song_name, lyrics are passed to the 
-    respective class. Furthermore the instances are stored in a list. 
+    Instances of each songs gets created. And the label, artist_id, song_name, lyrics are passed to the
+    respective class. Furthermore the instances are stored in a list.
     """
     song_instance = Song(label=content.iloc[i][0], artist_id=content.iloc[i][4], song_name=content.iloc[i][1],
              lyrics=content.iloc[i][3])
     list_of_song_instances.append(song_instance)
-training_data, validation_data, test_data = split_data(dt=list_of_song_instances)
+training_data, validation_data, test_data = utt.split_data(dt=list_of_song_instances)
+
+#I need the text for all songs in training data
+list_of_texts = []
+for song in training_data:
+    list_of_texts.append(song.string_of_lyrics)
 
 
 """
@@ -55,7 +62,7 @@ Feature Extraction
     - create feature for each song!
 """
 
-NRC = pd.read_csv('../benchmark/NRCLexicon.csv',sep='\t') 
+NRC = pd.read_csv('../benchmark/NRCLexicon.csv',sep='\t')
 newNRC = NRC.groupby(['word']).agg(lambda x: tuple(x)).applymap(list).reset_index() #because words have multiple emotions, want list of emotions per word
 wordAssociations = dict(zip(newNRC['word'], newNRC['emotion'])) # this is the database that you want to give to the feature extraction
 
@@ -68,21 +75,32 @@ functionWords = []
 with open("../benchmark/50ProPrepDet.txt") as ff:
     functionWords = ff.read().splitlines()
 
+#unigram tfidf scores
+vectorizer = CountVectorizer()
+count_vector = vectorizer.fit_transform(list_of_texts)#count vector for all training documents
+tfidf_transformer = TfidfTransformer(smooth_idf=True, use_idf=True)
+tfidf_transformer.fit(count_vector) #learns the global idf vector
+
+#bigram tfidf scores
+#bi_vectorizer = CountVectorizer(analyzer='word', ngram_range=(2,2))
+#bi_count_vector = bi_vectorizer.fit_transform(list_of_texts)#also a count vector but with bigrams
+#bi_tfidf_transformer = TfidfTransformer(smooth_idf=True, use_idf=True)
+#bi_tfidf_transformer.fit(bi_count_vector)
+
 for song in \
         tqdm(training_data, desc='Creating Feature_vector for training'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
-    print(song.feature_vector)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer)
 for song in tqdm(validation_data, desc='Creating Feature_vector for validation'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer)
 
 for song in tqdm(test_data, desc='Creating Feature_vector for testing'):
-    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions)
+    song.extract_unique_song_features(nouns, functionWords, wordAssociations, allEmotions, tfidf_transformer, vectorizer)
 
 """
 Running  Multi_class_Perceptron
 """
 total_classes = list(dict_artistnames_to_indx.keys())
-m = MCP(classes=total_classes, weight_vec_length=119)  #was length of vocab before
+m = MCP(classes=total_classes, weight_vec_length=121)  #was length of vocab before
 
 unique_artists = list(dict_artistnames_to_indx.values())
 list_of_evaluation_micro_scores = []
@@ -138,7 +156,7 @@ with open('../results/' + str(no_of_top_artist) + '_artists_' + str(no_of_epochs
 list_of_actual_labels=[]
 list_of_predicted_labels=[]
 for song in tqdm(test_data, desc='Testing'):
-    feature_vec = song.feature_vector 
+    feature_vec = song.feature_vector
     label=song.label
     dict_of_scores=m.find_all_scores(feature_vec)
     predicted_perceptron, max_score = m.find_max(dict_of_scores=dict_of_scores)

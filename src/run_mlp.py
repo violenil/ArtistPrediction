@@ -8,6 +8,7 @@ import evaluation as eva
 from tqdm import tqdm
 from train_validation_test import run_epochs, no_of_top_artist
 import numpy as np
+import tf_idf_feature_extraction as tf_idf
 
 
 ### read file
@@ -30,9 +31,7 @@ content = read_file(file_name='../benchmark/songdata.csv')
 content = filter_content(data=content, k=no_of_top_artist)
 content = content.sample(frac=1, random_state=7).reset_index(drop=True)  # shuffle data
 
-no_of_artists = len(content['artist'].value_counts())
 dict_artistnames_to_indx = {}
-print('Read File')
 
 
 def get_artist_to_idx(artist: str) -> int:
@@ -50,17 +49,37 @@ def get_artist_to_idx(artist: str) -> int:
 content['artist_id'] = content['artist'].apply(
     get_artist_to_idx)  # a new column gets created in the csv file with unique artist_id.
 
-### find feature vector length
+#### SPLIT DATA
+training_content_len = int(len(content) * 0.9)
+validate_content_len = int(len(content) * 0.05)
+training_content = content[:training_content_len]
+validate_content = content[training_content_len:training_content_len + validate_content_len]
+testing_content = content[training_content_len + validate_content_len:]
+
+no_of_artists = len(content['artist'].value_counts())
+print('Read File')
+
+training_content = tf_idf.get_tf_idf_values(training_content)
+
 
 ### Create song instances and keep it in a list
-list_of_song_instances = []
-for i in tqdm(range(len(content)), desc='Creating Song Instances'):
-    song_instance = Song(label=content.iloc[i][0], song_name=content.iloc[i][1], lyrics=content.iloc[i][3],
-                         artist_id=content.iloc[i][4])
-    list_of_song_instances.append(song_instance)
+def create_song_instances(content: pd.DataFrame):
+    list_of_song_instances = []
+    # for i in tqdm(range(len(content)), desc='Creating Song Instances'):
+    for i, song in content.iterrows():
+        tf_idf = 0.0
+        if 'tf_idf_score' in song:
+            tf_idf = song['tf_idf_score']
+        song_instance = Song(label=song['artist'], song_name=song['song'], lyrics=song['text'],
+                             artist_id=song['artist_id'], tf_idf_score=tf_idf)
+        list_of_song_instances.append(song_instance)
+    return list_of_song_instances
 
-### Split Data
-training_data_instances, validation_data_instances, test_data_instances = utt.split_data(dt=list_of_song_instances)
+
+### call create instances using the split data separately
+training_data_instances = create_song_instances(content=training_content)
+validation_data_instances = create_song_instances(content=validate_content)
+test_data_instances = create_song_instances(content=testing_content)
 # print(len(training_data_instances), len(validation_data_instances))
 batch_size = 15
 
