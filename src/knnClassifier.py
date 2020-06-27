@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 
 df = pd.read_csv("../benchmark/songdata.csv")
-reduced_df = filter_content(df, 50)  #only want the top artists with most no of songs
+reduced_df = filter_content(df, 5)  #only want the top artists with most no of songs
 lyrics = reduced_df['text']
 artists = reduced_df['artist']
 
