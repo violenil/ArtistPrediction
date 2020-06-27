@@ -7,19 +7,19 @@ Here are all the functions for extracting features. 'bow_feature_extraction' is 
 """
 
 
-def bow_feature_extraction(self, vocab: Dict) -> None:
+def bow_feature_extraction(lyrics: List, vocab: Dict) -> None:
     """
     this method considers bag of words model for feature extraction
     the vocab for this method needs to be created elsewhere, consisting of all types in our
     song collection
     """
     feat_vec = []
-    for word in self.lyrics:
+    for word in lyrics:
         if word in vocab:
             idx = vocab[word]
             feat_vec.append(idx)
     # assert len(vocab) == len(feat_vec)
-    self.feature_vector = feat_vec
+    return feat_vec
 
 def extract_emotions(lyrics: List, wordAssociations: Dict, allEmotions: List) -> List:
     """
@@ -78,7 +78,7 @@ def calculate_tfidf_score(tfidf_transformer, vectorizer, lyrics: str):
     return tfidf_score
 
 
-def extract_unique_song_features(tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer, tokens: List, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List, lyrics:str) -> List:
+def extract_unique_song_features(tfidf_transformer, vectorizer, tokens: List, nouns: List, functionWords: List, wordAssociations: Dict, allEmotions: List, lyrics:str) -> List:
     """
     This method extracts a set of features:
         8 emotions (anger, fear, anticipation, trust, surprise, sadness, joy, disgust)
@@ -97,7 +97,7 @@ def extract_unique_song_features(tfidf_transformer, vectorizer, bi_tfidf_transfo
     repetition_rate = calculate_repetition_rate(tokens)
 
     tfidf_score = calculate_tfidf_score(tfidf_transformer, vectorizer, lyrics)
-    bi_tfidf_score = calculate_tfidf_score(bi_tfidf_transformer, bi_vectorizer, lyrics)
+    #bi_tfidf_score = calculate_tfidf_score(bi_tfidf_transformer, bi_vectorizer, lyrics)
 
 
     #popular_nouns = ["love", "time", "way", "day", "baby", "heart", "life", "night", "gonna", "man"]
@@ -113,11 +113,11 @@ def extract_unique_song_features(tfidf_transformer, vectorizer, bi_tfidf_transfo
     feat_vec += freq_func_count
     feat_vec += freq_punct_count
     feat_vec.append(tfidf_score)
-    feat_vec.append(bi_tfidf_score)
+    #feat_vec.append(bi_tfidf_score)
 
     return feat_vec
 
-def create_feature_vector(tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer, tokens: List, lyrics: str):
+def create_manual_feature_vector(tfidf_transformer, vectorizer, tokens: List, lyrics: str):
     """
     Feature Extraction
         - import NRCLexicon, which has word to emotion mappings
@@ -139,5 +139,14 @@ def create_feature_vector(tfidf_transformer, vectorizer, bi_tfidf_transformer, b
     with open("../benchmark/50ProPrepDet.txt") as ff:
         functionWords = ff.read().splitlines()
 
-    feature_vector = extract_unique_song_features(tfidf_transformer, vectorizer, bi_tfidf_transformer, bi_vectorizer, tokens, nouns, functionWords, wordAssociations, allEmotions, lyrics)
+    feature_vector = extract_unique_song_features(tfidf_transformer, vectorizer, tokens, nouns, functionWords, wordAssociations, allEmotions, lyrics)
     return feature_vector
+
+def create_bow_feature_vector(tokens: List, vocab: Dict):
+    feature_idx_vector = bow_feature_extraction(tokens, vocab)
+    feat_vec = []
+    for i in range(len(vocab)):
+        feat_vec.append(0)
+    for i in feature_idx_vector:    #converting index vector to binary vector
+        feat_vec[i] = 1
+    return feat_vec 
