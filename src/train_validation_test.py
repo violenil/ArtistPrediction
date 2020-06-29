@@ -15,12 +15,11 @@ from Classifier_with_cnn import Classifier_using_cnn
 TRAINING
 """
 no_of_top_artist = 2
-no_of_epochs = 2000
-model_name = ['RNN', 'manual_features', 'CNN'][1]  # also change song.py
+no_of_epochs = 40
+model_name = ['RNN', 'manual_features', 'CNN'][2]  # also change song.py
 
 device = torch.device(
     'cuda:0' if torch.cuda.is_available() else 'cpu')
-
 
 if model_name == 'RNN':
     classifier = Classifier(embedding_size=300, no_of_labels=no_of_top_artist)  # to access the classifier that uses RNN
@@ -29,7 +28,6 @@ elif model_name == 'manual_features':
                                             no_of_labels=no_of_top_artist)  # To access the classifier that uses manual_features
 elif model_name == 'CNN':
     classifier = Classifier_using_cnn(embedding_size=300, no_of_labels=no_of_top_artist)
-
 
 classifier.to(device)
 # lr = 5.0  # initial learning rate
@@ -99,8 +97,38 @@ def validate_network(validation_data_instances_with_batches: List) -> float:
     return list_of_actual_labels, list_of_predicted_labels, mean_loss
 
 
+### TESTING
+def test_network(test_data_instances_with_batches: List) -> float:
+    classifier.eval()
+    list_of_actual_labels = []
+    list_of_predicted_labels = []
+    with torch.no_grad():  # no backpropagation
+        for batch in tqdm(test_data_instances_with_batches, desc='Testing'):
+            list_of_labels_per_batch = []
+            list_of_inputs = []
+            for song in batch:
+                label = song.artist_id
+                list_of_labels_per_batch.append(label)
+                embedded_input = song.get_feature_vector(model_name)
+                list_of_inputs.append(embedded_input)
+            inputs = torch.FloatTensor(list_of_inputs)
+            inputs = inputs.to(device) # if present sent to GPU
+            # labels = torch.FloatTensor(list_of_labels)
+            predicted_probabilities = classifier(embedded_input=inputs)
+            #labels = torch.tensor(list_of_labels_per_batch).long().to(device)
+            predicted_labels_per_batch = torch.argmax(predicted_probabilities, dim=1)
+            list_of_predicted_labels.extend(predicted_labels_per_batch.tolist())
+            list_of_actual_labels.extend(list_of_labels_per_batch)
+            # list_of_predicted_labels_per_batch = []
+            # predicted_probabilities = classifier(embedded_input=inputs)
+            #
+            # predicted_labels_per_batch = torch.argmax(predicted_probabilities, dim=1)
+            # list_of_predicted_labels.extend(predicted_labels_per_batch.tolist())
+    return list_of_actual_labels, list_of_predicted_labels
+
+
 def run_epochs(unique_artists, training_data_instances_with_batches,
-               validation_data_instances_with_batches):
+               validation_data_instances_with_batches, test_data_instances_with_batches):
     list_of_evaluation_micro_scores = []
     list_of_evaluation_macro_scores = []
     list_mean_loss_of_training = []
@@ -141,9 +169,10 @@ def run_epochs(unique_artists, training_data_instances_with_batches,
         }
         json.dump(dt, results_file)
     plot_trainig_validation_loss(list_mean_loss_of_training, list_of_mean_loss_of_validation)
-    # labels, predicted_labels = test_network(test_data_instances_with_batches)
-    # evaluation = eva.evaluate_predictions(labels, predicted_labels,
-    #                                       unique_artists)
-    # micro_scores_dict = eva.micro_scores(evaluation)
-    # macro_scores_dict = eva.macro_scores(evaluation)
-    # print('micro_f_score= ', micro_scores_dict["microF1"], 'macro_f_score= ', macro_scores_dict["macroF1"])
+    list_of_actual_labels, list_of_predicted_labels=test_network(test_data_instances_with_batches)
+    evaluation = eva.evaluate_predictions(list_of_actual_labels, list_of_predicted_labels,
+                                          unique_artists)
+    micro_scores_dict = eva.micro_scores(evaluation)
+    macro_scores_dict = eva.macro_scores(evaluation)
+    print(
+        f'Testing f-scores Micro_f_score = {micro_scores_dict["microF1"]} Macro_f_score =  {macro_scores_dict["macroF1"]}')

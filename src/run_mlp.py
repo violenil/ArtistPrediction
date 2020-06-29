@@ -59,6 +59,7 @@ testing_content = content[training_content_len + validate_content_len:]
 no_of_artists = len(content['artist'].value_counts())
 print('Read File')
 
+### TF-IDF column
 training_content = tf_idf.get_tf_idf_values(training_content)
 
 
@@ -116,4 +117,4 @@ unique_artists = list(dict_artistnames_to_indx.values())
 
 # def extend_batches_to_list():
 
-run_epochs(unique_artists, training_data_instances_with_batches, validation_data_instances_with_batches)
+run_epochs(unique_artists, training_data_instances_with_batches, validation_data_instances_with_batches, test_data_instances_with_batches)
