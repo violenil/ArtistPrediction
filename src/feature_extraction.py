@@ -93,6 +93,7 @@ def extract_unique_song_features(tfidf_transformer, vectorizer, tokens: List, no
     """
     feat_vec = []
     emotion_feature_vector = extract_emotions(tokens, wordAssociations, allEmotions)
+    emotion_average = sum(emotion_feature_vector)/8
     longest_word_length_feature = find_length_of_longest(tokens)
     repetition_rate = calculate_repetition_rate(tokens)
 
@@ -105,6 +106,7 @@ def extract_unique_song_features(tfidf_transformer, vectorizer, tokens: List, no
     freq_func_count = count_freq_nouns(tokens, functionWords)
     freq_punct_count = count_freq_nouns(tokens, [",",".","!","?","'"])
 
+    feat_vec.append(emotion_average)
     feat_vec += emotion_feature_vector
     feat_vec.append(longest_word_length_feature)
     feat_vec.append(repetition_rate)
