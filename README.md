@@ -6,19 +6,32 @@ The most challenging part of this project is the large number classes in the dat
 
 Previous work that relates to this project includes authorship attribution, where characterizations of documents are defined that capture the writing style of authors. This project attempts to do a similar thing in that it focuses on the aspects of song lyrics (and song names) that are unique to each artist. Other work that relates specifically to music and lyrics is song genre classification, where the goal is to distinguish between a given number of genres and predict which genre a song falls into.
 
-The approach of this project was to first build a Perceptron classifier, a simple baseline, which considers only a bag-of-words binary feature vector in its classification decision. At a later point, more complex feature vectors may be extracted to increase the efficiency of classification.
+The approach of this project was to first build a Perceptron classifier, a simple baseline, which considers only a bag-of-words binary feature vector in its classification decision. At a later point, more complex feature vectors is extracted to increase the efficiency of classification. 
+To further increase the efficiency and performance, linear classifier is considered as a classifier and a feature vector is constructed from word embeddings with an a application of CNN .
 
 ## How does it work? 🤔
 The following steps gives a brief idea about the functional structure of the code.
 
 - The dataset is read.
 - Instances for each song are created and kept in a list.
-- Feature vectors are created by considering words present in the lyrics of all songs (bag-of-words approach)
-- An instance of the Multi-Class Perceptron (MCP) is created, which controls the creation of one Perceptron for each class.
-- Each Perceptron calculates the scores based on a given feature vector and randomly initialized weight vector.
-- The max score is then compared with the actual label.
-- Weights get updated in the Perceptron class.
-- The Evaluation returns micro and macro f-scores.
+    #### Initial approach 
+    - Feature vectors are created by considering words present in the lyrics of all songs (bag-of-words approach)
+    - An instance of the Multi-Class Perceptron (MCP) is created, which controls the creation of one Perceptron for each class.
+    - Each Perceptron calculates the scores based on a given feature vector and randomly initialized weight vector.
+    - The max score is then compared with the actual label.
+    - Weights get updated in the Perceptron class.
+    - The Evaluation returns micro and macro f-scores.
+    #### Further approaches considers 
+     - ##### Feature vector types 
+        - The feature vector is designed to capture characteristics that may be relevant and unique to songs (manual feature vector).
+        - Feature vector derived from word embeddings for 200 words present in lyrics with an application of CNN.
+     
+     - ##### Classifiers 
+         - A linear classifier with one hidden layer.
+         - k nearest neighbor (kNN) classifier.
+     
+     - The Evaluation returns micro and macro f-scores.
+    
 
 ## Requirements
 
@@ -26,23 +39,42 @@ The following steps gives a brief idea about the functional structure of the cod
 - python3
 
 #### Libraries
-- pandas
-- re
-- matplotlib
-- tqdm
+- #### Initial approach
+    - pandas
+    - re
+    - matplotlib
+    - tqdm
+- #### Further approaches
+    - pandas
+    - pytorch
+    - numpy
+    - nltk
+    - re
+    - seaborn
+    - matplotlib
+    - tqdm
 
 
 ## How to run? 🏃
+- ##### initial approach
+    In order to run the code, the file named run.py should be executed. Following are the steps of instructions, how to execute run.py.
+    
+    1. Open a terminal and change directory to _src_. ``` cd ArtistPrediction/src ```
+    
+    2. Execute the  command.  ``` python3 run.py ```
 
-In order to run the code, the file named run.py should be executed. Following are the steps of instructions, how to execute run.py.
-
-1. Open a terminal and change directory to _src_. ``` cd ArtistPrediction/src ```
-
-2. Execute the  command.  ``` python3 run.py ```
-
-## Interpreting the results
-
-After the execution of run.py gets completed, several files are created in the directory results and Plots.
+- ##### Further approaches
+    In order to run the code with linear classifier, switch to the branch named ``` mlp```. The file named ```run_mlp.py``` should be executed. 
+    Following are the steps of instructions, how to execute run_mlp.py. 
+    
+    1. Open a terminal and change directory to _src_. ``` cd ArtistPrediction/src ```
+    2. Execute the  command.  ``` python3 run_mlp.py ```.
+     
+## Interpreting the results 
+- #####Initial approach 
+    After the execution of run.py gets completed, several files are created in the directory results and Plots. 
+- #####Further approaches
+    After the execution of run_mlp.py gets completed, several files are also created in the directory results and Plots.
 
 #### Results
 The evaluated f-scores are kept in a json file and looks like ```
@@ -59,7 +91,8 @@ The evaluated f-scores are kept in a json file and looks like ```
   - the 'micro_f_score' or 'macro_f_score' consists of list of scores, where each score corresponds to scores per epoch.
 
 #### Plots
-The plots are generated using matplotlib. no_of_epochs are plotted on the x-axis and f-scores are on the y-axis.
+The plots are generated using matplotlib. no_of_epochs are plotted on the x-axis and f-scores are on the y-axis. 
+To plot performance of all models in one graph we consider seaborn.
 
 
 Apart from these while executing the run.py, the f-score per epoch is also visible in the terminal.
@@ -70,7 +103,7 @@ Apart from these while executing the run.py, the f-score per epoch is also visib
   - contains our dataset.
 
 - ```ArtistPrediction/src```
-  - contains our scource code.
+  - contains our source code.
 
 - ```ArtistPrediction/Plots```
   - contains the generated plots
