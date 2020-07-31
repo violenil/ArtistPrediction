@@ -43,6 +43,15 @@ def evaluate_predictions(list_of_labels: List, list_of_predicted_labels: List, l
         
     return dict_of_results
 
+def calculate_accuracy(dict_of_results: Dict) -> int:
+    allTP = sum(dict_of_results['TP'])
+    allFP = sum(dict_of_results['FP'])
+    allFN = sum(dict_of_results['FN'])
+    allTN = sum(dict_of_results['TN'])
+    acc = (allTP+allTN)/(allTP+allTN+allFP+allFN)
+
+    return acc
+
 def micro_scores(dict_of_results: Dict) -> Dict:
     """
     This function calculates the average of all tp, fp, fn, tn for all classes and provides a micro precision and recall and F1
