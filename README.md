@@ -71,9 +71,9 @@ The following steps gives a brief idea about the functional structure of the cod
     2. Execute the  command.  ``` python3 run_mlp.py ```.
      
 ## Interpreting the results 
-- #####Initial approach 
+- ##### Initial approach 
     After the execution of run.py gets completed, several files are created in the directory results and Plots. 
-- #####Further approaches
+- ##### Further approaches
     After the execution of run_mlp.py gets completed, several files are also created in the directory results and Plots.
 
 #### Results
